@@ -31,7 +31,7 @@ import HotelModal from './hotel-modal';
 
 export default function HotelsGrid() {
   const { user: currentUser } = useAuth();
-  const { data: hotels = [], isLoading, error } = useHotels();
+  const { data: hotels = [], isLoading, error } = useHotels({ active_only: false }); // Get ALL hotels for admin management
   const deleteHotelMutation = useDeleteHotel();
   const toggleHotelActiveMutation = useToggleHotelActive();
   
@@ -51,9 +51,17 @@ export default function HotelsGrid() {
     const matchesSearch = hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          hotel.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          hotel.country.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === 'all' || 
-                         (selectedStatus === 'active' && hotel.is_active) ||
-                         (selectedStatus === 'inactive' && !hotel.is_active);
+    
+    // More robust status filtering - handle potential undefined/null values
+    let matchesStatus = false;
+    if (selectedStatus === 'all') {
+      matchesStatus = true;
+    } else if (selectedStatus === 'active') {
+      matchesStatus = hotel.is_active === true;
+    } else if (selectedStatus === 'inactive') {
+      matchesStatus = hotel.is_active === false;
+    }
+    
     return matchesSearch && matchesStatus;
   });
 

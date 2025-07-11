@@ -1,0 +1,561 @@
+@import "tailwindcss";
+
+:root {
+  --background: 210 11% 4%;
+  --foreground: 210 40% 98%;
+  --card: 210 9% 6%;
+  --card-foreground: 210 40% 98%;
+  --popover: 210 9% 6%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 263 70% 60%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 7% 12%;
+  --secondary-foreground: 210 40% 85%;
+  --muted: 210 7% 12%;
+  --muted-foreground: 210 15% 60%;
+  --accent: 210 7% 12%;
+  --accent-foreground: 210 40% 85%;
+  --destructive: 0 75% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 210 7% 15%;
+  --input: 210 7% 15%;
+  --ring: 263 70% 60%;
+  --radius: 0.5rem;
+
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  --sidebar-primary: 224.3 76.3% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 240 4.8% 95.9%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+/* Keyframe animations for Loveable components */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Custom utility classes for Loveable components */
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.bg-gradient-hero {
+  background: linear-gradient(180deg, hsl(210 11% 4%), hsl(210 11% 6%));
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, hsl(263 70% 60%), hsl(263 70% 70%));
+}
+
+.shadow-card {
+  box-shadow: 0 10px 30px -10px hsl(210 11% 0% / 0.5);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 40px hsl(263 70% 60% / 0.3);
+}
+
+.glass-effect {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Text gradient utility for hero title */
+.text-transparent {
+  color: transparent;
+}
+
+.bg-clip-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+/* Color utility classes for Tailwind v4 */
+.text-primary {
+  color: hsl(var(--primary));
+}
+
+.text-primary-foreground {
+  color: hsl(var(--primary-foreground));
+}
+
+.text-secondary {
+  color: hsl(var(--secondary));
+}
+
+.text-secondary-foreground {
+  color: hsl(var(--secondary-foreground));
+}
+
+.text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
+.text-foreground {
+  color: hsl(var(--foreground));
+}
+
+.text-accent {
+  color: hsl(var(--accent));
+}
+
+.text-accent-foreground {
+  color: hsl(var(--accent-foreground));
+}
+
+.text-destructive {
+  color: hsl(var(--destructive));
+}
+
+.text-destructive\/70 {
+  color: hsl(var(--destructive) / 0.7);
+}
+
+.text-card-foreground {
+  color: hsl(var(--card-foreground));
+}
+
+/* Background color utilities */
+.bg-background {
+  background-color: hsl(var(--background));
+}
+
+.bg-card {
+  background-color: hsl(var(--card));
+}
+
+.bg-primary {
+  background-color: hsl(var(--primary));
+}
+
+.bg-secondary {
+  background-color: hsl(var(--secondary));
+}
+
+.bg-muted {
+  background-color: hsl(var(--muted));
+}
+
+.bg-accent {
+  background-color: hsl(var(--accent));
+}
+
+/* Background color utilities with opacity - For Tailwind v4 compatibility */
+.bg-card\/30 {
+  background-color: hsl(var(--card) / 0.3);
+}
+
+.bg-card\/50 {
+  background-color: hsl(var(--card) / 0.5);
+}
+
+.bg-card\/70 {
+  background-color: hsl(var(--card) / 0.7);
+}
+
+.bg-card\/80 {
+  background-color: hsl(var(--card) / 0.8);
+}
+
+.bg-background\/50 {
+  background-color: hsl(var(--background) / 0.5);
+}
+
+.bg-background\/80 {
+  background-color: hsl(var(--background) / 0.8);
+}
+
+.bg-primary\/10 {
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+.bg-primary\/20 {
+  background-color: hsl(var(--primary) / 0.2);
+}
+
+.bg-primary\/50 {
+  background-color: hsl(var(--primary) / 0.5);
+}
+
+.bg-destructive\/10 {
+  background-color: hsl(var(--destructive) / 0.1);
+}
+
+.bg-destructive\/20 {
+  background-color: hsl(var(--destructive) / 0.2);
+}
+
+.bg-black\/40 {
+  background-color: hsl(0 0% 0% / 0.4);
+}
+
+.bg-black\/60 {
+  background-color: hsl(0 0% 0% / 0.6);
+}
+
+.bg-black\/70 {
+  background-color: hsl(0 0% 0% / 0.7);
+}
+
+.bg-white\/10 {
+  background-color: hsl(0 0% 100% / 0.1);
+}
+
+.bg-white\/20 {
+  background-color: hsl(0 0% 100% / 0.2);
+}
+
+.bg-background\/95 {
+  background-color: hsl(var(--background) / 0.95);
+}
+
+/* Border color utilities */
+.border-border {
+  border-color: hsl(var(--border));
+}
+
+.border-primary {
+  border-color: hsl(var(--primary));
+}
+
+.border-destructive\/20 {
+  border-color: hsl(var(--destructive) / 0.2);
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Ring utilities for focus states */
+.ring-primary\/50 {
+  --tw-ring-color: hsl(var(--primary) / 0.5);
+}
+
+.ring-destructive\/20 {
+  --tw-ring-color: hsl(var(--destructive) / 0.2);
+}
+
+/* Backdrop and modal-specific utilities */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* Modal animation keyframes */
+@keyframes modal-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-exit {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95) translateY(16px);
+  }
+}
+
+@keyframes backdrop-enter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes backdrop-exit {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes tab-content-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tab-content-exit {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal animation utility classes */
+.modal-enter {
+  animation: modal-enter 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-exit {
+  animation: modal-exit 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.backdrop-enter {
+  animation: backdrop-enter 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.backdrop-exit {
+  animation: backdrop-exit 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.tab-content-enter {
+  animation: tab-content-enter 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.tab-content-exit {
+  animation: tab-content-exit 150ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-modal-in {
+  animation: modal-in 0.3s ease-out forwards;
+}
+
+/* Enhanced loading animations for dark theme */
+@keyframes spinner-dark {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-dots-dark {
+  0%, 20% { 
+    transform: scale(1); 
+    opacity: 1; 
+    background-color: hsl(263 70% 60%);
+  }
+  50% { 
+    transform: scale(1.2); 
+    opacity: 0.7; 
+    background-color: hsl(263 70% 70%);
+  }
+  80%, 100% { 
+    transform: scale(1); 
+    opacity: 1; 
+    background-color: hsl(263 70% 60%);
+  }
+}
+
+@keyframes loading-shimmer-dark {
+  0% { 
+    background-position: -200px 0; 
+  }
+  100% { 
+    background-position: calc(200px + 100%) 0; 
+  }
+}
+
+@keyframes loading-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Loading spinner variants */
+.animate-spin-dark {
+  animation: spinner-dark 1s linear infinite;
+}
+
+.animate-pulse-dots-dark {
+  animation: pulse-dots-dark 1.5s ease-in-out infinite;
+}
+
+.loading-shimmer-dark {
+  background: linear-gradient(90deg, 
+    transparent, 
+    hsl(var(--primary) / 0.2), 
+    transparent
+  );
+  background-size: 200px 100%;
+  animation: loading-shimmer-dark 1.5s infinite;
+}
+
+.loading-gradient-bg {
+  background: linear-gradient(-45deg, 
+    hsl(var(--background)), 
+    hsl(var(--card)), 
+    hsl(var(--background)), 
+    hsl(var(--card))
+  );
+  background-size: 400% 400%;
+  animation: loading-gradient 2s ease infinite;
+}
+
+/* Loading overlay for buttons */
+.loading-overlay {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.1), 
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.loading-overlay.active::before {
+  left: 100%;
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, 
+    hsl(var(--muted) / 0.3), 
+    hsl(var(--muted) / 0.5), 
+    hsl(var(--muted) / 0.3)
+  );
+  background-size: 200px 100%;
+  animation: loading-shimmer-dark 1.5s infinite;
+}
+
+/* Hide scrollbars but keep scrolling functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}

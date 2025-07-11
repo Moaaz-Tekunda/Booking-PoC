@@ -1,0 +1,107 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import AuthModal from '@/components/auth/auth-modal';
+import Hero from '@/components/Hero';
+import Features from '@/components/Features';
+import HowItWorks from '@/components/HowItWorks';
+import Footer from '@/components/Footer';
+
+
+export default function Home() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
+  const [isRedirectingAdmin, setIsRedirectingAdmin] = useState(false);
+  
+  const { 
+    user, 
+    isAuthenticated, 
+    isLoading, 
+    error,
+    logout,
+    clearError 
+  } = useAuth();
+
+  const router = useRouter();
+
+  // Prefetch admin route for faster navigation
+  useEffect(() => {
+    router.prefetch('/admin');
+  }, [router]);
+
+  // Handle admin redirect immediately after authentication
+  useEffect(() => {
+    if (isAuthenticated && user?.role?.includes('admin') && !isRedirectingAdmin) {
+      setIsRedirectingAdmin(true);
+      // Use Next.js router for smoother navigation
+      router.push('/admin');
+    }
+  }, [isAuthenticated, user, router, isRedirectingAdmin]);
+
+  const openAuthModal = (tab: 'login' | 'register' = 'login') => {
+    setAuthModalTab(tab);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleStartNow = () => {
+    if (isAuthenticated) {
+      // If user is admin, set redirecting state and navigate
+      if (user?.role?.includes('admin')) {
+        setIsRedirectingAdmin(true);
+        router.push('/admin');
+      } else {
+        // Redirect to user dashboard/booking page
+        console.log('User already authenticated, redirecting to user dashboard...');
+      }
+    } else {
+      // Open login modal
+      openAuthModal('login');
+    }
+  };
+
+  // Show loading spinner during authentication or admin redirect
+  if (isLoading || isRedirectingAdmin) {
+    const loadingText = isRedirectingAdmin 
+      ? "Redirecting to admin dashboard..." 
+      : "Loading your experience...";
+      
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-card">
+        <div className="text-center">
+          <div className="relative">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-card/50 backdrop-blur-sm border border-border flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
+            </div>
+            
+            {/* Pulsing dots */}
+            <div className="flex justify-center space-x-2 mb-4">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+            </div>
+            
+            <p className="text-muted-foreground animate-fade-in">{loadingText}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Hero onStartNow={handleStartNow} />
+      <Features />
+      <HowItWorks />
+      <Footer />
+      
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultTab={authModalTab}
+      />
+    </div>
+  );
+}

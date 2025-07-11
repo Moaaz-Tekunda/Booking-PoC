@@ -134,12 +134,7 @@ export default function DashboardOverview({ onSectionChange }: DashboardOverview
       description: 'Detailed booking and revenue analytics',
       icon: TrendingUp,
       action: () => {
-        if (onSectionChange) {
-          onSectionChange('users');
-          toast.success('Navigating to Users section');
-        } else {
           toast.info('Analytics feature coming soon');
-        }
       },
       color: 'bg-accent'
     }

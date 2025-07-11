@@ -116,6 +116,11 @@ export default function UsersGrid() {
 
   return (
     <div className="space-y-6">
+      {/* Expanded Card Overlay */}
+      {expandedCard && (
+        <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" onClick={() => setExpandedCard(null)} />
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
@@ -179,7 +184,9 @@ export default function UsersGrid() {
             return (
               <div
                 key={user.id}
-                className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card transition-all duration-300 group"
+                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card transition-all duration-300 group ${
+                  isExpanded ? 'relative z-50 shadow-2xl scale-105' : ''
+                }`}
               >
                 {/* Card Header */}
                 <div className="flex items-start justify-between mb-4">
@@ -226,7 +233,7 @@ export default function UsersGrid() {
 
                 {/* Expanded Content */}
                 {isExpanded && (
-                  <div className="border-t border-border pt-4 space-y-4 animate-fade-in">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-card backdrop-blur-xl border border-border rounded-2xl shadow-2xl p-6 animate-fade-in max-w-md z-10">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Job:</span>
@@ -247,7 +254,7 @@ export default function UsersGrid() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-2 pt-2">
+                    <div className="flex gap-2 pt-4">
                       {canEditUser && (
                         <Button
                           variant="ghost"

@@ -185,15 +185,15 @@ export default function UsersGrid() {
               <div
                 key={user.id}
                 onClick={() => toggleCardExpansion(user.id)}
-                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card transition-all duration-300 group cursor-pointer ${
-                  isExpanded ? 'relative z-50 shadow-2xl scale-105' : ''
+                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/80 hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.02] hover:border-primary/30 transition-all duration-300 group cursor-pointer ${
+                  isExpanded ? 'relative z-50 shadow-2xl scale-105 bg-card/90 border-primary/50' : ''
                 }`}
               >
                 {/* Card Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                      <span className="text-lg font-bold text-primary">
+                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 group-hover:scale-110 transition-all duration-300">
+                      <span className="text-lg font-bold text-primary group-hover:text-primary/90">
                         {user.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
@@ -208,12 +208,12 @@ export default function UsersGrid() {
                       {user.role.replace('_', ' ').toUpperCase()}
                     </span>
                     <button
-                      className="p-1 rounded-lg hover:bg-background/50 transition-colors"
+                      className="p-1 rounded-lg hover:bg-primary/20 hover:scale-110 transition-all duration-200"
                     >
                       {isExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                        <ChevronUp className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                       ) : (
-                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                       )}
                     </button>
                   </div>

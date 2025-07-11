@@ -184,7 +184,8 @@ export default function UsersGrid() {
             return (
               <div
                 key={user.id}
-                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card transition-all duration-300 group ${
+                onClick={() => toggleCardExpansion(user.id)}
+                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card transition-all duration-300 group cursor-pointer ${
                   isExpanded ? 'relative z-50 shadow-2xl scale-105' : ''
                 }`}
               >
@@ -207,7 +208,6 @@ export default function UsersGrid() {
                       {user.role.replace('_', ' ').toUpperCase()}
                     </span>
                     <button
-                      onClick={() => toggleCardExpansion(user.id)}
                       className="p-1 rounded-lg hover:bg-background/50 transition-colors"
                     >
                       {isExpanded ? (
@@ -259,7 +259,10 @@ export default function UsersGrid() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleEdit(user)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(user);
+                          }}
                           className="flex-1"
                         >
                           <Edit3 className="h-4 w-4 mr-2" />
@@ -270,7 +273,10 @@ export default function UsersGrid() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleToggleActive(user)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleActive(user);
+                          }}
                           className="flex-1"
                         >
                           <Shield className="h-4 w-4 mr-2" />
@@ -281,7 +287,10 @@ export default function UsersGrid() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(user)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(user);
+                          }}
                           className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
                           <Trash2 className="h-4 w-4" />

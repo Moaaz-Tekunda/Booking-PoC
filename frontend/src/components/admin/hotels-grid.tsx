@@ -190,7 +190,8 @@ export default function HotelsGrid() {
             return (
               <div
                 key={hotel.id}
-                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card transition-all duration-300 group ${
+                onClick={() => toggleCardExpansion(hotel.id)}
+                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card transition-all duration-300 group cursor-pointer ${
                   isExpanded ? 'relative z-50 shadow-2xl scale-105' : ''
                 }`}
               >
@@ -215,7 +216,6 @@ export default function HotelsGrid() {
                       {hotel.is_active ? 'Active' : 'Inactive'}
                     </div>
                     <button
-                      onClick={() => toggleCardExpansion(hotel.id)}
                       className="p-1 rounded-lg hover:bg-background/50 transition-colors"
                     >
                       {isExpanded ? (
@@ -328,7 +328,10 @@ export default function HotelsGrid() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleEdit(hotel)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(hotel);
+                          }}
                           className="flex-1"
                         >
                           <Edit3 className="h-4 w-4 mr-2" />
@@ -339,7 +342,10 @@ export default function HotelsGrid() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleToggleActive(hotel)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleActive(hotel);
+                          }}
                           className="flex-1"
                         >
                           {hotel.is_active ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
@@ -350,7 +356,10 @@ export default function HotelsGrid() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(hotel)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(hotel);
+                          }}
                           className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
                           <Trash2 className="h-4 w-4" />

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  /* Dark theme as default */
   --background: 210 11% 4%;
   --foreground: 210 40% 98%;
   --card: 210 9% 6%;
@@ -32,26 +33,60 @@
   --sidebar-ring: 217.2 91.2% 59.8%;
 }
 
-.dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+.light {
+  /* Light theme colors */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 263 70% 60%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 94%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 94%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 94%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 263 70% 60%;
+
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+.dark {
+  /* Dark theme with purple accents */
+  --background: 210 11% 4%;
+  --foreground: 210 40% 98%;
+  --card: 210 9% 6%;
+  --card-foreground: 210 40% 98%;
+  --popover: 210 9% 6%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 263 70% 60%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 7% 12%;
+  --secondary-foreground: 210 40% 85%;
+  --muted: 210 7% 12%;
+  --muted-foreground: 210 15% 60%;
+  --accent: 210 7% 12%;
+  --accent-foreground: 210 40% 85%;
+  --destructive: 0 75% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 210 7% 15%;
+  --input: 210 7% 15%;
+  --ring: 263 70% 60%;
+
   --sidebar-background: 240 5.9% 10%;
   --sidebar-foreground: 240 4.8% 95.9%;
   --sidebar-primary: 224.3 76.3% 48%;
@@ -558,4 +593,111 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
+}
+
+/* Modal and form theme enhancements */
+.modal-content {
+  color-scheme: dark light;
+}
+
+/* Ensure all form elements inherit theme colors */
+input, select, textarea {
+  color-scheme: inherit;
+}
+
+/* Enhanced checkbox styling for better theme support */
+input[type="checkbox"] {
+  appearance: none;
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+  width: 16px;
+  height: 16px;
+  position: relative;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+input[type="checkbox"]:checked::before {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: hsl(var(--primary-foreground));
+  font-size: 12px;
+  font-weight: bold;
+}
+
+input[type="checkbox"]:focus {
+  outline: 2px solid hsl(var(--primary) / 0.5);
+  outline-offset: 2px;
+}
+
+/* Enhanced select dropdown styling */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 32px;
+}
+
+/* Theme transition for all elements - more specific for better performance */
+button, input, select, textarea, [class*="bg-"], [class*="border-"], [class*="text-"] {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Card hover and interaction improvements */
+.group {
+  transform-origin: center;
+}
+
+.group:hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group:active {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fix card hover and click interaction issues */
+.card-interactive {
+  transform-origin: center;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.card-interactive:hover:not(.expanded) {
+  transform: scale(1.02) translateZ(0);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-interactive.expanded {
+  transform: scale(1.05) translateZ(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-interactive.expanded:hover {
+  transform: scale(1.05) translateZ(0); /* Prevent additional scaling when expanded */
+}
+
+/* Smooth transitions for interactive elements */
+.smooth-hover {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smooth-hover:hover {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevent layout shift during hover */
+.prevent-shift {
+  will-change: transform;
+  transform: translateZ(0);
 }

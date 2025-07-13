@@ -127,11 +127,11 @@ export default function UserModal({ isOpen, onClose, user, mode }: UserModalProp
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide bg-card/90 backdrop-blur-xl border border-border rounded-2xl shadow-2xl animate-modal-in"
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide bg-card backdrop-blur-xl border border-border rounded-2xl shadow-2xl animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-card backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {mode === 'create' ? (
               <UserPlus className="h-6 w-6 text-primary" />
@@ -349,7 +349,7 @@ export default function UserModal({ isOpen, onClose, user, mode }: UserModalProp
                 name="is_active"
                 checked={formData.is_active}
                 onChange={handleInputChange}
-                className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary/50 focus:ring-2"
+                className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary/50 focus:ring-2 accent-primary"
               />
               <label className="text-sm font-medium text-foreground">
                 Active user

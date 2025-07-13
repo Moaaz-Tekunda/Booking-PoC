@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar, MapPin, Settings, User } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface HeroProps {
   onStartNow?: () => void;
@@ -9,6 +10,11 @@ const Hero = ({ onStartNow }: HeroProps) => {
 //
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden">
+      {/* Theme Toggle - Fixed in top-right corner */}
+      <div className="absolute top-6 right-6 z-20">
+        <ThemeToggle variant="icon" size="lg" />
+      </div>
+
       {/* Hero Content */}
       <div className="flex-1 flex items-center justify-center bg-gradient-hero">
         {/* Background Image with Overlay */}

@@ -170,7 +170,7 @@ export default function DashboardOverview({ onSectionChange }: DashboardOverview
             <div
               key={stat.title}
               onClick={stat.onClick}
-              className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card hover:scale-105 transition-all duration-300 group cursor-pointer"
+              className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/70 hover:shadow-card hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-3 rounded-xl ${stat.bgColor}`}>
@@ -259,7 +259,7 @@ export default function DashboardOverview({ onSectionChange }: DashboardOverview
               <button
                 key={action.title}
                 onClick={action.action}
-                className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 text-left hover:bg-card/70 hover:shadow-card hover:scale-105 transition-all duration-300 group"
+                className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 text-left hover:bg-card/70 hover:shadow-card hover:scale-[1.02] transition-all duration-200 group"
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className={`p-3 rounded-xl ${action.color}/10`}>

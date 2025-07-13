@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -30,18 +31,23 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>
-          <AuthProvider>
-            {children}
-            <Toaster 
-              position="top-right" 
-              toastOptions={{
-                className: 'bg-card/90 backdrop-blur-sm border-border text-foreground',
-                duration: 4000,
-              }}
-            />
-          </AuthProvider>
-        </QueryProvider>
+        <ThemeProvider
+          defaultTheme="dark"
+          storageKey="booking-app-theme"
+        >
+          <QueryProvider>
+            <AuthProvider>
+              {children}
+              <Toaster 
+                position="top-right" 
+                toastOptions={{
+                  className: 'bg-card/90 backdrop-blur-sm border-border text-foreground',
+                  duration: 4000,
+                }}
+              />
+            </AuthProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

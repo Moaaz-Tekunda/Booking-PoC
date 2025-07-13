@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -157,6 +158,8 @@ export default function AdminLayout({
 
           {/* Action Buttons - Enhanced visibility */}
           <div className="space-y-2">
+            <ThemeToggle variant="full" />
+            
             <Button
               variant="ghost"
               onClick={handleGoHome}

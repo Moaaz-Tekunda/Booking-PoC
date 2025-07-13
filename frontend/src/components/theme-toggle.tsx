@@ -54,10 +54,10 @@ export function ThemeToggle({ variant = 'icon', size = 'default' }: ThemeToggleP
         variant="ghost"
         size={size}
         onClick={cycleTheme}
-        className="justify-start gap-2 hover:bg-background/50 transition-all duration-200"
+        className="justify-start gap-2 hover:bg-primary/10 hover:text-primary hover:scale-[1.02] transition-all duration-200 group"
       >
-        {getIcon()}
-        <span>{getLabel()} Theme</span>
+        <span className="group-hover:text-primary transition-colors">{getIcon()}</span>
+        <span className="group-hover:text-primary transition-colors">{getLabel()} Theme</span>
       </Button>
     );
   }

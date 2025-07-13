@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Users, Building2, Calendar, TrendingUp, Plus, DollarSign, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import { Users, Building2, Calendar, TrendingUp, Plus, DollarSign, CheckCircle, Clock, ChevronRight, LayoutDashboard  } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useDashboardStats } from '@/hooks/use-dashboard';
 import { toast } from 'sonner';
@@ -149,12 +149,24 @@ export default function DashboardOverview({ onSectionChange }: DashboardOverview
         </div>
       )}
 
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <LayoutDashboard className="h-6 w-6 text-primary" />
+            Overview
+          </h2>
+          <p className="text-muted-foreground">Quick actions and system statistics</p>
+        </div>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           
           return (
+            
             <div
               key={stat.title}
               onClick={stat.onClick}

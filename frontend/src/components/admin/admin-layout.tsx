@@ -65,10 +65,10 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
+      {/* Sidebar - Fixed position to stay in place during scroll */}
       <div className={`${
         isSidebarOpen ? 'w-80' : 'w-20'
-      } transition-all duration-300 bg-card/30 backdrop-blur-sm border-r border-border flex flex-col`}>
+      } transition-all duration-300 bg-card/30 backdrop-blur-sm border-r border-border flex flex-col fixed h-full z-40`}>
         
         {/* Sidebar Header */}
         <div className="p-6 border-b border-border">
@@ -90,8 +90,8 @@ export default function AdminLayout({
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        {/* Navigation - Scrollable middle section */}
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto min-h-0">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -129,8 +129,8 @@ export default function AdminLayout({
           })}
         </nav>
 
-        {/* User Info & Actions */}
-        <div className="p-4 border-t border-border space-y-3">
+        {/* User Info & Actions - Always visible at bottom */}
+        <div className="p-4 border-t border-border space-y-3 bg-card/50 backdrop-blur-sm">
           {/* User Info */}
           {isSidebarOpen && (
             <div className="bg-background/50 rounded-xl p-4">
@@ -155,58 +155,37 @@ export default function AdminLayout({
             </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Enhanced visibility */}
           <div className="space-y-2">
             <Button
               variant="ghost"
               onClick={handleGoHome}
-              className={`w-full justify-start hover:bg-background/50 ${
+              className={`w-full justify-start hover:bg-background/50 hover:scale-[1.02] transition-all duration-200 group ${
                 !isSidebarOpen ? 'px-3' : ''
               }`}
             >
-              <Home className="h-4 w-4" />
-              {isSidebarOpen && <span className="ml-3">Back to Home</span>}
+              <Home className="h-4 w-4 group-hover:text-primary transition-colors" />
+              {isSidebarOpen && <span className="ml-3 group-hover:text-primary transition-colors">Back to Home</span>}
             </Button>
             
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className={`w-full justify-start hover:bg-destructive/10 hover:text-destructive ${
+              className={`w-full justify-start hover:bg-destructive/10 hover:text-destructive hover:scale-[1.02] transition-all duration-200 group ${
                 !isSidebarOpen ? 'px-3' : ''
               }`}
             >
-              <LogOut className="h-4 w-4" />
-              {isSidebarOpen && <span className="ml-3">Sign Out</span>}
+              <LogOut className="h-4 w-4 group-hover:text-destructive transition-colors" />
+              {isSidebarOpen && <span className="ml-3 group-hover:text-destructive transition-colors">Sign Out</span>}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
-        <header className="bg-card/30 backdrop-blur-sm border-b border-border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground capitalize">
-                {activeSection}
-              </h2>
-              <p className="text-muted-foreground">
-                {activeSection === 'overview' && 'Dashboard overview and statistics'}
-                {activeSection === 'users' && 'Manage user accounts and permissions'}
-                {activeSection === 'hotels' && 'Manage hotel properties and bookings'}
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Welcome back,</p>
-                <p className="font-medium text-foreground">{user?.name}</p>
-              </div>
-            </div>
-          </div>
-        </header>
-
+      {/* Main Content - Offset by sidebar width */}
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+        isSidebarOpen ? 'ml-80' : 'ml-20'
+      }`}>
         {/* Page Content */}
         <main className="flex-1 overflow-auto p-6">
           {children}

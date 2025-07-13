@@ -50,7 +50,7 @@ export default function UsersGrid() {
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'super_admin':
-        return 'bg-red-500/10 text-red-500 border-red-500/20';
+        return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
       case 'admin_hotel':
         return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
       case 'viewer':

@@ -4,7 +4,7 @@
   /* Dark theme as default */
   --background: 210 11% 4%;
   --foreground: 210 40% 98%;
-  --card: 210 9% 6%;
+  --card: 210 11% 4%;
   --card-foreground: 210 40% 98%;
   --popover: 210 9% 6%;
   --popover-foreground: 210 40% 98%;
@@ -35,9 +35,9 @@
 
 .light {
   /* Light theme colors */
-  --background: 0 0% 100%;
+  --background: 100 0% 90%;
   --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
+  --card: 0 0% 96%;
   --card-foreground: 222.2 84% 4.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
@@ -51,7 +51,7 @@
   --accent-foreground: 222.2 47.4% 11.2%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
+  --border: 214.3 31.8% 81.4%;
   --input: 214.3 31.8% 91.4%;
   --ring: 263 70% 60%;
 

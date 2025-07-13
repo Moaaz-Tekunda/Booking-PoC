@@ -69,7 +69,7 @@ export default function AdminLayout({
       {/* Sidebar - Fixed position to stay in place during scroll */}
       <div className={`${
         isSidebarOpen ? 'w-80' : 'w-20'
-      } transition-all duration-300 bg-card/30 backdrop-blur-sm border-r border-border flex flex-col fixed h-full z-40`}>
+      } transition-all duration-300 bg-backgournd backdrop-blur-sm border-r border-border flex flex-col fixed h-full z-40`}>
         
         {/* Sidebar Header */}
         <div className="p-6 border-b border-border">
@@ -131,10 +131,10 @@ export default function AdminLayout({
         </nav>
 
         {/* User Info & Actions - Always visible at bottom */}
-        <div className="p-4 border-t border-border space-y-3 bg-card/50 backdrop-blur-sm">
+        <div className="p-4 border-t border-border space-y-3 space bg-background backdrop-blur-sm">
           {/* User Info */}
           {isSidebarOpen && (
-            <div className="bg-background/50 rounded-xl p-4">
+            <div className="bg-background rounded-xl p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                   <span className="text-sm font-bold text-primary">

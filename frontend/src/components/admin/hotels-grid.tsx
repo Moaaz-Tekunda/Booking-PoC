@@ -191,8 +191,10 @@ export default function HotelsGrid() {
               <div
                 key={hotel.id}
                 onClick={() => toggleCardExpansion(hotel.id)}
-                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 hover:bg-card/80 hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.02] hover:border-primary/30 transition-all duration-300 group cursor-pointer ${
-                  isExpanded ? 'relative z-50 shadow-2xl scale-105 bg-card/90 border-primary/50' : ''
+                className={`bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 transition-all duration-300 group cursor-pointer ${
+                  isExpanded 
+                    ? 'relative z-50 shadow-2xl scale-105 bg-card/90 border-primary/50' 
+                    : 'hover:bg-card/80 hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.02] hover:border-primary/30'
                 }`}
               >
                 {/* Card Header */}

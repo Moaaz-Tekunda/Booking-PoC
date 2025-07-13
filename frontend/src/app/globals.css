@@ -667,13 +667,14 @@ button, input, select, textarea, [class*="bg-"], [class*="border-"], [class*="te
 }
 
 /* Fix card hover and click interaction issues */
-.card-interactive {
+.card-interactive, .group {
   transform-origin: center;
   backface-visibility: hidden;
   perspective: 1000px;
+  will-change: transform;
 }
 
-.card-interactive:hover:not(.expanded) {
+.card-interactive:hover:not(.expanded), .group:hover {
   transform: scale(1.02) translateZ(0);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -685,6 +686,17 @@ button, input, select, textarea, [class*="bg-"], [class*="border-"], [class*="te
 
 .card-interactive.expanded:hover {
   transform: scale(1.05) translateZ(0); /* Prevent additional scaling when expanded */
+}
+
+/* Landing page specific hover improvements */
+.hero-button:hover {
+  transform: scale(1.02) translateZ(0);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px) translateZ(0);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Smooth transitions for interactive elements */

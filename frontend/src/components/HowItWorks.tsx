@@ -43,7 +43,7 @@ const HowItWorks = () => {
               )}
               
               {/* Card */}
-              <div className="relative z-10 h-full bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-8 text-center group-hover:bg-card/70 group-hover:shadow-card group-hover:scale-105 transition-all duration-300 flex flex-col">
+              <div className="relative z-10 h-full bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-8 text-center group-hover:bg-card/70 group-hover:shadow-card group-hover:scale-[1.02] transition-all duration-200 flex flex-col">
                 {/* Step Number */}
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground font-bold text-lg mb-6 mx-auto">
                   {step.step}

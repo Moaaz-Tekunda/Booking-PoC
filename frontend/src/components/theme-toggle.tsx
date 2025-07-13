@@ -67,7 +67,7 @@ export function ThemeToggle({ variant = 'icon', size = 'default' }: ThemeToggleP
       variant="ghost"
       size={size === 'default' ? 'icon' : size}
       onClick={cycleTheme}
-      className="hover:bg-background/50 hover:scale-105 transition-all duration-200"
+      className="hover:bg-background/50 hover:scale-[1.02] transition-all duration-200"
       title={`Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} theme`}
     >
       {getIcon()}

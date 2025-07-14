@@ -713,3 +713,121 @@ button, input, select, textarea, [class*="bg-"], [class*="border-"], [class*="te
   will-change: transform;
   transform: translateZ(0);
 }
+
+/* Text truncation utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+
+.line-clamp-none {
+  overflow: visible;
+  display: block;
+  -webkit-box-orient: horizontal;
+  -webkit-line-clamp: none;
+  line-clamp: none;
+}
+
+/* Image sliding animations for hotel gallery */
+.image-gallery {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-slide-enter {
+  transform: translateX(100%);
+}
+
+.image-slide-enter-active {
+  transform: translateX(0);
+}
+
+.image-slide-exit {
+  transform: translateX(0);
+}
+
+.image-slide-exit-active {
+  transform: translateX(-100%);
+}
+
+/* Hotel card hover animations */
+.hotel-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.hotel-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Image gallery smooth transitions */
+.gallery-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-image {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-container:hover .gallery-image {
+  transform: scale(1.05);
+}
+
+/* Navigation buttons smooth appearance */
+.nav-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+}
+
+.nav-button:hover {
+  transform: scale(1.1);
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Image indicators */
+.image-indicator {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.image-indicator:hover {
+  transform: scale(1.2);
+}

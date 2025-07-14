@@ -53,7 +53,7 @@ export default function Home() {
         router.push('/admin');
       } else {
         // Redirect to user dashboard/booking page
-        console.log('User already authenticated, redirecting to user dashboard...');
+        router.push('/dashboard');
       }
     } else {
       // Open login modal

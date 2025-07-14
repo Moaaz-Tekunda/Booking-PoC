@@ -18,10 +18,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Hotel } from '@/types/hotel';
-import { ReservationType, BookingFormData, ReservationCreate, ReservationStatus } from '@/types/booking';
+import { ReservationType, BookingFormData } from '@/types/booking';
 import { useAuth } from '@/hooks/use-auth';
-import { BookingService } from '@/services/booking-service';
-import { apiClient } from '@/lib/api';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -51,20 +49,6 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
         hotelId: hotel.id,
         ...initialBookingData
       }));
-      
-      // Fetch available rooms to get pricing
-      const fetchRooms = async () => {
-        try {
-          const roomsResponse = await apiClient.get(`/rooms/hotel/${hotel.id}?available_only=true`);
-          if (roomsResponse.data.length > 0) {
-            setSelectedRoom(roomsResponse.data[0]);
-          }
-        } catch (error) {
-          console.error('Failed to fetch rooms:', error);
-        }
-      };
-      
-      fetchRooms();
     }
   }, [hotel, isOpen, initialBookingData]);
 
@@ -91,12 +75,9 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  const [selectedRoom, setSelectedRoom] = useState<any>(null);
-
   const calculateTotalPrice = () => {
     const nights = calculateNights();
-    // Use room price if available, otherwise default to $120
-    const basePrice = selectedRoom?.price_per_night || 120;
+    const basePrice = 120; // TODO: Get from room data
     let multiplier = 1;
     
     switch (formData.reservationType) {
@@ -122,67 +103,14 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
   };
 
   const handleSubmit = async () => {
-    if (!user || !hotel) {
-      console.error('User or hotel not available');
-      return;
-    }
-
     setIsSubmitting(true);
     
     try {
-      // Get available rooms for this hotel
-      const roomsResponse = await apiClient.get(`/rooms/hotel/${hotel.id}?available_only=true`);
-      const availableRooms = roomsResponse.data;
-      
-      if (availableRooms.length === 0) {
-        throw new Error('No available rooms for the selected dates');
-      }
-
-      // Use the first available room and store it for price calculation
-      const roomToBook = availableRooms[0];
-      setSelectedRoom(roomToBook);
-
-      // Calculate price with the selected room
-      const nights = calculateNights();
-      const basePrice = roomToBook.price_per_night;
-      let multiplier = 1;
-      
-      switch (formData.reservationType) {
-        case ReservationType.BED_BREAKFAST:
-          multiplier = 1.2;
-          break;
-        case ReservationType.ALL_INCLUSIVE:
-          multiplier = 1.8;
-          break;
-        default:
-          multiplier = 1;
-      }
-      
-      const totalPrice = Math.round(nights * basePrice * multiplier * formData.guests);
-
-      // Create reservation data
-      const reservationData: ReservationCreate = {
-        hotel_id: hotel.id,
-        room_id: roomToBook.id,
-        visitor_id: user.id,
-        start_date: formData.checkIn,
-        end_date: formData.checkOut,
-        type: formData.reservationType,
-        status: ReservationStatus.CONFIRMED, // Skip payment processing for now
-        total_price: totalPrice
-      };
-
-      // Create the reservation
-      const reservation = await BookingService.createReservation(reservationData);
-      
-      console.log('Reservation created successfully:', reservation);
+      // TODO: Submit booking to API
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
       setStep('confirmation');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Booking failed:', error);
-      
-      // Show user-friendly error message
-      const errorMessage = error.response?.data?.detail || error.message || 'Failed to create reservation';
-      alert(`Booking failed: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }

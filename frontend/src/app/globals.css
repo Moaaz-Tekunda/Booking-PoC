@@ -761,29 +761,9 @@ button, input, select, textarea, [class*="bg-"], [class*="border-"], [class*="te
   overflow: hidden;
 }
 
-.image-slide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.image-slide-enter {
-  transform: translateX(100%);
-}
-
-.image-slide-enter-active {
-  transform: translateX(0);
-}
-
-.image-slide-exit {
-  transform: translateX(0);
-}
-
-.image-slide-exit-active {
-  transform: translateX(-100%);
+/* Smooth crossfade transition for images */
+.gallery-image-transition {
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Hotel card hover animations */

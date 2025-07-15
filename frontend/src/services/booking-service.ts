@@ -4,11 +4,13 @@ import { ReservationCreate, ReservationResponse, Reservation } from '@/types/boo
 export interface Room {
   id: string;
   room_number: string;
-  room_type: string;
-  room_price: number;
-  max_guests: number;
-  room_amenities: string[];
   hotel_id: string;
+  price_per_night: number;
+  description?: string;
+  type: string;
+  max_occupancy: number;
+  is_available: boolean;
+  created_at: string;
 }
 
 export class BookingService {

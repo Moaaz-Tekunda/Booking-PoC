@@ -55,6 +55,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
         setLoadingRooms(true);
         try {
           const hotelRooms = await BookingService.getRoomsByHotel(hotel.id);
+          console.log('Loaded rooms:', hotelRooms); // Debug log
           setRooms(hotelRooms);
         } catch (error) {
           console.error('Error loading rooms:', error);
@@ -107,7 +108,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
 
   const calculateTotalPrice = () => {
     const nights = calculateNights();
-    const basePrice = selectedRoom?.room_price || 120; // Use room price or fallback
+    const basePrice = selectedRoom?.price_per_night || 120; // Use correct field name
     let multiplier = 1;
     
     switch (formData.reservationType) {
@@ -341,7 +342,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{nights} night{nights > 1 ? 's' : ''} × {formData.guests} guest{formData.guests > 1 ? 's' : ''}</span>
-                      <span className="text-foreground">${(nights * (selectedRoom?.room_price || 120) * formData.guests).toLocaleString()}</span>
+                      <span className="text-foreground">${(nights * (selectedRoom?.price_per_night || 120) * formData.guests).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Reservation type</span>
@@ -373,58 +374,58 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                   </div>
                 ) : (
                   <div className="grid gap-4">
-                    {rooms.map((room) => (
-                      <div
-                        key={room.id}
-                        className={`border rounded-xl p-4 cursor-pointer transition-all ${
-                          selectedRoom?.id === room.id
-                            ? 'border-primary bg-primary/5'
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                        onClick={() => setSelectedRoom(room)}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-foreground mb-1">
-                              Room {room.room_number} - {room.room_type}
-                            </h4>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              Max {room.max_guests} guest{room.max_guests > 1 ? 's' : ''}
-                            </p>
-                            {room.room_amenities?.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mb-2">
-                                {room.room_amenities.slice(0, 3).map((amenity, index) => (
-                                  <span
-                                    key={index}
-                                    className="px-2 py-1 bg-background text-xs rounded-md border"
-                                  >
-                                    {amenity}
-                                  </span>
-                                ))}
-                                {room.room_amenities.length > 3 && (
-                                  <span className="px-2 py-1 bg-background text-xs rounded-md border">
-                                    +{room.room_amenities.length - 3} more
-                                  </span>
-                                )}
+                    {rooms.map((room) => {
+                      const roomPrice = room.price_per_night || 0;
+                      const isValidRoom = roomPrice > 0 && room.max_occupancy > 0;
+                      
+                      return (
+                        <div
+                          key={room.id}
+                          className={`border rounded-xl p-4 cursor-pointer transition-all ${
+                            selectedRoom?.id === room.id
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border hover:border-primary/50'
+                          } ${!isValidRoom ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          onClick={() => isValidRoom && setSelectedRoom(room)}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-foreground mb-1">
+                                Room {room.room_number} - {room.type}
+                              </h4>
+                              <p className="text-sm text-muted-foreground mb-2">
+                                Max {room.max_occupancy} guest{room.max_occupancy > 1 ? 's' : ''}
+                              </p>
+                              {room.description && (
+                                <p className="text-xs text-muted-foreground mb-2">
+                                  {room.description}
+                                </p>
+                              )}
+                              {!isValidRoom && (
+                                <p className="text-xs text-red-500">
+                                  Room information incomplete
+                                </p>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-primary">
+                                ${roomPrice > 0 ? roomPrice : '---'}/night
                               </div>
-                            )}
-                          </div>
-                          <div className="text-right">
-                            <div className="text-lg font-bold text-primary">
-                              ${room.room_price}/night
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              Total: ${(room.room_price * calculateNights()).toLocaleString()}
+                              {roomPrice > 0 && (
+                                <div className="text-sm text-muted-foreground">
+                                  Total: ${(roomPrice * calculateNights()).toLocaleString()}
+                                </div>
+                              )}
                             </div>
                           </div>
+                          {formData.guests > room.max_occupancy && (
+                            <div className="mt-2 text-sm text-red-500">
+                              This room can accommodate maximum {room.max_occupancy} guest{room.max_occupancy > 1 ? 's' : ''}
+                            </div>
+                          )}
                         </div>
-                        {formData.guests > room.max_guests && (
-                          <div className="mt-2 text-sm text-red-500">
-                            This room can accommodate maximum {room.max_guests} guest{room.max_guests > 1 ? 's' : ''}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -436,7 +437,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Room {selectedRoom.room_number} × {nights} night{nights > 1 ? 's' : ''}</span>
-                      <span className="text-foreground">${(nights * selectedRoom.room_price).toLocaleString()}</span>
+                      <span className="text-foreground">${(nights * selectedRoom.price_per_night).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Guests: {formData.guests}</span>
@@ -580,7 +581,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Room:</span>
-                    <span className="text-foreground">Room {selectedRoom?.room_number} - {selectedRoom?.room_type}</span>
+                    <span className="text-foreground">Room {selectedRoom?.room_number} - {selectedRoom?.type}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Booking ID:</span>
@@ -643,7 +644,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                 <Button 
                   onClick={handleNext} 
                   className="flex-1 bg-primary hover:bg-primary/90"
-                  disabled={!selectedRoom || (selectedRoom && formData.guests > selectedRoom.max_guests)}
+                  disabled={!selectedRoom || (selectedRoom && formData.guests > selectedRoom.max_occupancy)}
                 >
                   Continue to Payment
                 </Button>

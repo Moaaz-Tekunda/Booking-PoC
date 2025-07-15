@@ -13,7 +13,7 @@ import Footer from '@/components/Footer';
 export default function Home() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
-  const [isRedirectingAdmin, setIsRedirectingAdmin] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   
   const { 
     user, 
@@ -26,19 +26,26 @@ export default function Home() {
 
   const router = useRouter();
 
-  // Prefetch admin route for faster navigation
+  // Prefetch routes for faster navigation
   useEffect(() => {
     router.prefetch('/admin');
+    router.prefetch('/dashboard');
   }, [router]);
 
-  // Handle admin redirect immediately after authentication
+  // Handle redirect immediately after authentication
   useEffect(() => {
-    if (isAuthenticated && user?.role?.includes('admin') && !isRedirectingAdmin) {
-      setIsRedirectingAdmin(true);
-      // Use Next.js router for smoother navigation
-      router.push('/admin');
+    if (isAuthenticated && user && !isRedirecting) {
+      if (user.role?.includes('admin')) {
+        setIsRedirecting(true);
+        // Use Next.js router for smoother navigation
+        router.push('/admin');
+      } else {
+        // Redirect viewer users to dashboard
+        setIsRedirecting(true);
+        router.push('/dashboard');
+      }
     }
-  }, [isAuthenticated, user, router, isRedirectingAdmin]);
+  }, [isAuthenticated, user, router, isRedirecting]);
 
   const openAuthModal = (tab: 'login' | 'register' = 'login') => {
     setAuthModalTab(tab);
@@ -49,10 +56,11 @@ export default function Home() {
     if (isAuthenticated) {
       // If user is admin, set redirecting state and navigate
       if (user?.role?.includes('admin')) {
-        setIsRedirectingAdmin(true);
+        setIsRedirecting(true);
         router.push('/admin');
       } else {
         // Redirect to user dashboard/booking page
+        setIsRedirecting(true);
         router.push('/dashboard');
       }
     } else {
@@ -61,10 +69,10 @@ export default function Home() {
     }
   };
 
-  // Show loading spinner during authentication or admin redirect
-  if (isLoading || isRedirectingAdmin) {
-    const loadingText = isRedirectingAdmin 
-      ? "Redirecting to admin dashboard..." 
+  // Show loading spinner during authentication or redirect
+  if (isLoading || isRedirecting) {
+    const loadingText = isRedirecting 
+      ? "Redirecting to your dashboard..." 
       : "Loading your experience...";
       
     return (

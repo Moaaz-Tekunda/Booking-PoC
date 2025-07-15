@@ -8,6 +8,9 @@ import BookingModal from './booking-modal';
 import { DashboardHeader } from './dashboard-header';
 import { SearchFilters } from './search-filters';
 import { HotelGrid } from './hotel-grid';
+import { ViewerSidebar } from './viewer-sidebar';
+import MyReservations from './my-reservations';
+import { MyFavorites } from './my-favorites';
 
 export default function ViewerDashboard() {
   const { data: hotels = [], isLoading } = useHotels({ active_only: true });
@@ -34,6 +37,8 @@ export default function ViewerDashboard() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [currentView, setCurrentView] = useState('search');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const toggleFavorite = (hotelId: string) => {
     setFavorites(prev => 
@@ -53,38 +58,92 @@ export default function ViewerDashboard() {
     setSelectedHotel(null);
   };
 
+  const renderMainContent = () => {
+    switch (currentView) {
+      case 'search':
+        return (
+          <>
+            <SearchFilters
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              checkIn={checkIn}
+              setCheckIn={setCheckIn}
+              checkOut={checkOut}
+              setCheckOut={setCheckOut}
+              guests={guests}
+              setGuests={setGuests}
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+              selectedCity={selectedCity}
+              setSelectedCity={setSelectedCity}
+              selectedCountry={selectedCountry}
+              setSelectedCountry={setSelectedCountry}
+              cities={cities}
+              countries={countries}
+              resultsCount={filteredHotels.length}
+            />
+
+            <div className="container mx-auto px-4 py-8">
+              <HotelGrid
+                hotels={filteredHotels}
+                isLoading={isLoading}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                onBookNow={handleBookNow}
+              />
+            </div>
+          </>
+        );
+
+      case 'reservations':
+        return (
+          <div className="container mx-auto px-4 py-8">
+            <MyReservations />
+          </div>
+        );
+
+      case 'favorites':
+        return (
+          <div className="container mx-auto px-4 py-8">
+            <MyFavorites 
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
+            />
+          </div>
+        );
+
+      case 'profile':
+        return (
+          <div className="container mx-auto px-4 py-8">
+            <h2 className="text-2xl font-bold mb-4">Profile Settings</h2>
+            <p className="text-muted-foreground">Profile management coming soon...</p>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardHeader />
-      
-      <SearchFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        checkIn={checkIn}
-        setCheckIn={setCheckIn}
-        checkOut={checkOut}
-        setCheckOut={setCheckOut}
-        guests={guests}
-        setGuests={setGuests}
-        showFilters={showFilters}
-        setShowFilters={setShowFilters}
-        selectedCity={selectedCity}
-        setSelectedCity={setSelectedCity}
-        selectedCountry={selectedCountry}
-        setSelectedCountry={setSelectedCountry}
-        cities={cities}
-        countries={countries}
-        resultsCount={filteredHotels.length}
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar */}
+      <ViewerSidebar 
+        currentView={currentView}
+        onViewChange={setCurrentView}
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
       />
 
-      <div className="container mx-auto px-4 py-8">
-        <HotelGrid
-          hotels={filteredHotels}
-          isLoading={isLoading}
-          favorites={favorites}
-          onToggleFavorite={toggleFavorite}
-          onBookNow={handleBookNow}
-        />
+      {/* Main Content */}
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+        isSidebarOpen ? 'ml-80' : 'ml-20'
+      }`}>
+        <DashboardHeader />
+        
+        <main className="flex-1 overflow-auto">
+          {renderMainContent()}
+        </main>
       </div>
 
       <BookingModal

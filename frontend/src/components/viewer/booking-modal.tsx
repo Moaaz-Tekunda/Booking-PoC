@@ -18,8 +18,9 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Hotel } from '@/types/hotel';
-import { ReservationType, BookingFormData } from '@/types/booking';
+import { ReservationType, BookingFormData, ReservationCreate, ReservationStatus } from '@/types/booking';
 import { useAuth } from '@/hooks/use-auth';
+import { BookingService, Room } from '@/services/booking-service';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -30,8 +31,13 @@ interface BookingModalProps {
 
 export default function BookingModal({ isOpen, onClose, hotel, initialBookingData }: BookingModalProps) {
   const { user } = useAuth();
-  const [step, setStep] = useState<'details' | 'payment' | 'confirmation'>('details');
+  const [step, setStep] = useState<'details' | 'rooms' | 'payment' | 'confirmation'>('details');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [loadingRooms, setLoadingRooms] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [reservationId, setReservationId] = useState<string | null>(null);
   
   const [formData, setFormData] = useState<BookingFormData>({
     hotelId: '',
@@ -41,6 +47,26 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
     reservationType: ReservationType.ROOM_ONLY,
     specialRequests: ''
   });
+
+  // Load rooms when hotel is selected and dates are available
+  useEffect(() => {
+    const loadRooms = async () => {
+      if (hotel && formData.checkIn && formData.checkOut && step === 'rooms') {
+        setLoadingRooms(true);
+        try {
+          const hotelRooms = await BookingService.getRoomsByHotel(hotel.id);
+          setRooms(hotelRooms);
+        } catch (error) {
+          console.error('Error loading rooms:', error);
+          setRooms([]);
+        } finally {
+          setLoadingRooms(false);
+        }
+      }
+    };
+
+    loadRooms();
+  }, [hotel, formData.checkIn, formData.checkOut, step]);
 
   useEffect(() => {
     if (hotel && isOpen) {
@@ -56,6 +82,10 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
     if (!isOpen) {
       setStep('details');
       setIsSubmitting(false);
+      setSelectedRoom(null);
+      setRooms([]);
+      setBookingError(null);
+      setReservationId(null);
     }
   }, [isOpen]);
 
@@ -77,7 +107,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
 
   const calculateTotalPrice = () => {
     const nights = calculateNights();
-    const basePrice = 120; // TODO: Get from room data
+    const basePrice = selectedRoom?.room_price || 120; // Use room price or fallback
     let multiplier = 1;
     
     switch (formData.reservationType) {
@@ -95,7 +125,19 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
   };
 
   const handleNext = () => {
+    setBookingError(null);
     if (step === 'details') {
+      // Validate required fields
+      if (!formData.checkIn || !formData.checkOut || !formData.guests) {
+        setBookingError('Please fill in all required fields');
+        return;
+      }
+      setStep('rooms');
+    } else if (step === 'rooms') {
+      if (!selectedRoom) {
+        setBookingError('Please select a room');
+        return;
+      }
       setStep('payment');
     } else if (step === 'payment') {
       handleSubmit();
@@ -103,14 +145,51 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
   };
 
   const handleSubmit = async () => {
+    if (!user || !selectedRoom || !hotel) {
+      setBookingError('Missing required information');
+      return;
+    }
+
     setIsSubmitting(true);
+    setBookingError(null);
     
     try {
-      // TODO: Submit booking to API
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
+      // Step 1: Process payment (placeholder - always succeeds)
+      const paymentResult = await BookingService.processPayment({
+        amount: calculateTotalPrice(),
+        cardNumber: '4532015112830366', // Placeholder
+        expiryDate: '12/25',
+        cvv: '123',
+        name: user.name || 'Guest'
+      });
+
+      if (!paymentResult.success) {
+        throw new Error('Payment processing failed');
+      }
+
+      // Step 2: Create reservation
+      const reservationData: ReservationCreate = {
+        hotel_id: hotel.id,
+        room_id: selectedRoom.id,
+        visitor_id: user.id,
+        start_date: formData.checkIn, // Already in YYYY-MM-DD format
+        end_date: formData.checkOut,   // Already in YYYY-MM-DD format
+        type: formData.reservationType,
+        status: ReservationStatus.CONFIRMED,
+        total_price: calculateTotalPrice()
+      };
+
+      const reservation = await BookingService.createReservation(reservationData);
+      
+      if (!reservation) {
+        throw new Error('Failed to create reservation. The room may no longer be available.');
+      }
+
+      setReservationId(reservation.id);
       setStep('confirmation');
     } catch (error) {
       console.error('Booking failed:', error);
+      setBookingError(error instanceof Error ? error.message : 'Booking failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -130,6 +209,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
           <div>
             <h2 className="text-xl font-bold text-foreground">
               {step === 'details' && 'Booking Details'}
+              {step === 'rooms' && 'Select Room'}
               {step === 'payment' && 'Payment Information'}
               {step === 'confirmation' && 'Booking Confirmed!'}
             </h2>
@@ -261,7 +341,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{nights} night{nights > 1 ? 's' : ''} × {formData.guests} guest{formData.guests > 1 ? 's' : ''}</span>
-                      <span className="text-foreground">${(nights * 120 * formData.guests).toLocaleString()}</span>
+                      <span className="text-foreground">${(nights * (selectedRoom?.room_price || 120) * formData.guests).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Reservation type</span>
@@ -270,6 +350,105 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                     <div className="border-t border-border pt-2 flex justify-between font-medium">
                       <span className="text-foreground">Total</span>
                       <span className="text-primary text-lg">${totalPrice.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {step === 'rooms' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium text-foreground mb-4">Available Rooms</h3>
+                {loadingRooms ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <span className="ml-2 text-muted-foreground">Loading available rooms...</span>
+                  </div>
+                ) : rooms.length === 0 ? (
+                  <div className="text-center py-8">
+                    <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No rooms available for the selected dates.</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {rooms.map((room) => (
+                      <div
+                        key={room.id}
+                        className={`border rounded-xl p-4 cursor-pointer transition-all ${
+                          selectedRoom?.id === room.id
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                        onClick={() => setSelectedRoom(room)}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-foreground mb-1">
+                              Room {room.room_number} - {room.room_type}
+                            </h4>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              Max {room.max_guests} guest{room.max_guests > 1 ? 's' : ''}
+                            </p>
+                            {room.room_amenities?.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mb-2">
+                                {room.room_amenities.slice(0, 3).map((amenity, index) => (
+                                  <span
+                                    key={index}
+                                    className="px-2 py-1 bg-background text-xs rounded-md border"
+                                  >
+                                    {amenity}
+                                  </span>
+                                ))}
+                                {room.room_amenities.length > 3 && (
+                                  <span className="px-2 py-1 bg-background text-xs rounded-md border">
+                                    +{room.room_amenities.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <div className="text-lg font-bold text-primary">
+                              ${room.room_price}/night
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              Total: ${(room.room_price * calculateNights()).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                        {formData.guests > room.max_guests && (
+                          <div className="mt-2 text-sm text-red-500">
+                            This room can accommodate maximum {room.max_guests} guest{room.max_guests > 1 ? 's' : ''}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Updated Price Summary */}
+              {selectedRoom && nights > 0 && (
+                <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
+                  <h4 className="font-medium text-foreground mb-3">Price Summary</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Room {selectedRoom.room_number} × {nights} night{nights > 1 ? 's' : ''}</span>
+                      <span className="text-foreground">${(nights * selectedRoom.room_price).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Guests: {formData.guests}</span>
+                      <span className="text-foreground">×{formData.guests}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Reservation type</span>
+                      <span className="text-foreground">{formData.reservationType.replace('_', ' ')}</span>
+                    </div>
+                    <div className="border-t border-border pt-2 flex justify-between font-medium">
+                      <span className="text-foreground">Total</span>
+                      <span className="text-primary text-lg">${calculateTotalPrice().toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -400,8 +579,12 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                     <span className="text-foreground">{formData.guests}</span>
                   </div>
                   <div className="flex justify-between">
+                    <span className="text-muted-foreground">Room:</span>
+                    <span className="text-foreground">Room {selectedRoom?.room_number} - {selectedRoom?.room_type}</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-muted-foreground">Booking ID:</span>
-                    <span className="text-foreground font-mono">BKG-{Date.now().toString().slice(-6)}</span>
+                    <span className="text-foreground font-mono">{reservationId || `BKG-${Date.now().toString().slice(-6)}`}</span>
                   </div>
                   <div className="border-t border-border pt-2 flex justify-between font-medium">
                     <span className="text-foreground">Total Paid:</span>
@@ -422,6 +605,19 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
             </div>
           )}
 
+          {/* Error Display */}
+          {bookingError && (
+            <div className="bg-red-500/10 text-red-500 p-4 rounded-xl border border-red-500/20">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium mb-1">Booking Error</p>
+                  <p className="text-red-500/80">{bookingError}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex gap-3 pt-6 border-t border-border">
             {step === 'details' && (
@@ -434,6 +630,21 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                   className="flex-1 bg-primary hover:bg-primary/90"
                   disabled={!formData.checkIn || !formData.checkOut || nights <= 0}
                 >
+                  Select Room
+                </Button>
+              </>
+            )}
+
+            {step === 'rooms' && (
+              <>
+                <Button variant="outline" onClick={() => setStep('details')} className="flex-1">
+                  Back
+                </Button>
+                <Button 
+                  onClick={handleNext} 
+                  className="flex-1 bg-primary hover:bg-primary/90"
+                  disabled={!selectedRoom || (selectedRoom && formData.guests > selectedRoom.max_guests)}
+                >
                   Continue to Payment
                 </Button>
               </>
@@ -441,7 +652,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
             
             {step === 'payment' && (
               <>
-                <Button variant="outline" onClick={() => setStep('details')} className="flex-1">
+                <Button variant="outline" onClick={() => setStep('rooms')} className="flex-1">
                   Back
                 </Button>
                 <Button 

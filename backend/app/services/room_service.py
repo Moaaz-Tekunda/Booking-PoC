@@ -24,7 +24,7 @@ class RoomService:
             if existing_room:
                 return None  # Room number already exists
             
-            room = Room(**room_data.model_dump(), hotel=hotel)
+            room = Room(**room_data.model_dump())
             await room.create()
             
             return RoomResponse.model_validate({
@@ -38,7 +38,7 @@ class RoomService:
     async def get_room(room_id: str) -> Optional[RoomResponse]:
         """Get a room by ID"""
         try:
-            room = await Room.get(PydanticObjectId(room_id), fetch_links=True)
+            room = await Room.get(PydanticObjectId(room_id))
             if room:
                 return RoomResponse.model_validate({
                     **room.model_dump(),
@@ -68,19 +68,24 @@ class RoomService:
     @staticmethod
     async def get_rooms_by_hotel(hotel_id: str, available_only: bool = False) -> List[RoomResponse]:
         """Get rooms by hotel ID"""
-        query = {"hotel_id": hotel_id}
-        if available_only:
-            query["is_available"] = True
-        
-        rooms = await Room.find(query).to_list()
-        
-        return [
-            RoomResponse.model_validate({
-                **room.model_dump(),
-                "id": str(room.id)
-            })
-            for room in rooms
-        ]
+        try:
+            # Build the query using string hotel_id
+            query = {"hotel_id": hotel_id}
+            if available_only:
+                query["is_available"] = True
+            
+            rooms = await Room.find(query).to_list()
+            
+            return [
+                RoomResponse.model_validate({
+                    **room.model_dump(),
+                    "id": str(room.id)
+                })
+                for room in rooms
+            ]
+        except Exception as e:
+            print(f"Error in get_rooms_by_hotel: {e}")
+            return []
 
     @staticmethod
     async def update_room(room_id: str, room_data: RoomUpdate) -> Optional[RoomResponse]:

@@ -1,9 +1,8 @@
-from beanie import Document, Link
+from beanie import Document
 from pydantic import BaseModel, field_validator
 from typing import Optional
 from datetime import datetime
 from enum import Enum
-from app.models.hotel import Hotel
 
 
 class RoomType(str, Enum):
@@ -51,14 +50,13 @@ class RoomUpdate(BaseModel):
 
 
 class Room(Document, RoomBase):
-    hotel: Link[Hotel]
     created_at: datetime = datetime.utcnow()
 
     class Settings:
         name = "rooms"
         indexes = [
             "hotel_id",
-            "room_number",
+            "room_number", 
             "type",
             "is_available",
             ("hotel_id", "room_number")  # Compound unique index

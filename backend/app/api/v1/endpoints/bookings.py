@@ -23,7 +23,7 @@ async def create_reservation(
     """
     # Regular users can only create reservations for themselves
     if current_user.role == "viewer":
-        if reservation.user_id != str(current_user.id):
+        if reservation.visitor_id != str(current_user.id):
             raise HTTPException(
                 status_code=403,
                 detail="Users can only create reservations for themselves"
@@ -79,7 +79,7 @@ async def get_reservation(
     
     # Regular users can only view their own reservations
     if current_user.role == "viewer":
-        if reservation.user_id != str(current_user.id):
+        if reservation.visitor_id != str(current_user.id):
             raise HTTPException(status_code=403, detail="Not authorized to view this reservation")
     
     # Hotel admins can only view reservations from their hotel
@@ -113,7 +113,7 @@ async def update_reservation(
     
     # Regular users can only update their own reservations
     if current_user.role == "viewer":
-        if existing_reservation.user_id != str(current_user.id):
+        if existing_reservation.visitor_id != str(current_user.id):
             raise HTTPException(status_code=403, detail="Not authorized to update this reservation")
     
     # Hotel admins can only update reservations from their hotel
@@ -152,7 +152,7 @@ async def delete_reservation(
     
     # Regular users can only delete their own reservations
     if current_user.role == "viewer":
-        if existing_reservation.user_id != str(current_user.id):
+        if existing_reservation.visitor_id != str(current_user.id):
             raise HTTPException(status_code=403, detail="Not authorized to delete this reservation")
     
     # Hotel admins can only delete reservations from their hotel

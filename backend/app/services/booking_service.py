@@ -25,7 +25,7 @@ class ReservationService:
             if room.hotel_id != reservation_data.hotel_id:
                 return None
             
-            # Check for conflicting reservations
+            # Check for conflicting reservations using string date comparison
             conflicting = await Reservation.find({
                 "room_id": reservation_data.room_id,
                 "status": {"$in": ["confirmed", "checked_in"]},
@@ -40,8 +40,16 @@ class ReservationService:
             if conflicting:
                 return None  # Room is not available for these dates
             
+            # Create reservation directly with string dates
             reservation = Reservation(
-                **reservation_data.model_dump(),
+                hotel_id=reservation_data.hotel_id,
+                room_id=reservation_data.room_id,
+                visitor_id=reservation_data.visitor_id,
+                start_date=reservation_data.start_date,
+                end_date=reservation_data.end_date,
+                type=reservation_data.type,
+                status=reservation_data.status,
+                total_price=reservation_data.total_price,
                 hotel=hotel,
                 room=room,
                 visitor=visitor
@@ -52,7 +60,8 @@ class ReservationService:
                 **reservation.model_dump(),
                 "id": str(reservation.id)
             })
-        except Exception:
+        except Exception as e:
+            print(f"Error creating reservation: {e}")  # For debugging
             return None
 
     @staticmethod

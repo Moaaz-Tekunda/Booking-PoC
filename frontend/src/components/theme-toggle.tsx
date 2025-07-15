@@ -7,9 +7,10 @@ import { useTheme } from '@/components/theme-provider';
 interface ThemeToggleProps {
   variant?: 'icon' | 'full';
   size?: 'sm' | 'default' | 'lg';
+  className?: string;
 }
 
-export function ThemeToggle({ variant = 'icon', size = 'default' }: ThemeToggleProps) {
+export function ThemeToggle({ variant = 'icon', size = 'default', className = '' }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
 
   const cycleTheme = () => {
@@ -54,7 +55,7 @@ export function ThemeToggle({ variant = 'icon', size = 'default' }: ThemeToggleP
         variant="ghost"
         size={size}
         onClick={cycleTheme}
-        className="justify-start gap-2 hover:bg-primary/10 hover:text-primary hover:scale-[1.02] transition-all duration-200 group"
+        className={`justify-start gap-2 hover:bg-primary/10 hover:text-primary hover:scale-[1.02] transition-all duration-200 group ${className}`}
       >
         <span className="group-hover:text-primary transition-colors">{getIcon()}</span>
         <span className="group-hover:text-primary transition-colors">{getLabel()} Theme</span>
@@ -67,7 +68,7 @@ export function ThemeToggle({ variant = 'icon', size = 'default' }: ThemeToggleP
       variant="ghost"
       size={size === 'default' ? 'icon' : size}
       onClick={cycleTheme}
-      className="hover:bg-background/50 hover:scale-[1.02] transition-all duration-200"
+      className={`hover:bg-background/50 hover:scale-[1.02] transition-all duration-200 ${className}`}
       title={`Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} theme`}
     >
       {getIcon()}

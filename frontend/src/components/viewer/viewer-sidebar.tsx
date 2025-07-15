@@ -158,7 +158,10 @@ export function ViewerSidebar({
 
         {/* Action Buttons */}
         <div className="space-y-2">
-          <ThemeToggle variant="full" />
+          <ThemeToggle 
+            variant={isSidebarOpen ? "full" : "icon"} 
+            className={isSidebarOpen ? "w-full" : "w-full"}
+          />
           
           <Button
             variant="ghost"

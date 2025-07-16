@@ -34,7 +34,6 @@ export default function HotelsGrid() {
   const { data: hotels = [], isLoading, error } = useHotels({ active_only: false }); // Get ALL hotels for admin management
   const deleteHotelMutation = useDeleteHotel();
   const toggleHotelActiveMutation = useToggleHotelActive();
-  
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');

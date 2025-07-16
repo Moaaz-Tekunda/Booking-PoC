@@ -21,9 +21,14 @@ interface AdminLayoutProps {
   children: React.ReactNode;
   activeSection: 'overview' | 'users' | 'hotels';
   onSectionChange: (section: 'overview' | 'users' | 'hotels') => void;
-  user: any;
+  user: any; // Should be super_admin only
 }
 
+/**
+ * AdminLayout - Super Admin Only Component
+ * This layout is exclusively for super admin users and provides
+ * access to all system-wide management features.
+ */
 export default function AdminLayout({ 
   children, 
   activeSection, 
@@ -149,7 +154,7 @@ export default function AdminLayout({
                     {user?.email}
                   </p>
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary mt-1">
-                    {user?.role?.replace('_', ' ').toUpperCase()}
+                    SUPER ADMIN
                   </span>
                 </div>
               </div>

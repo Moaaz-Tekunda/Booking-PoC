@@ -30,18 +30,21 @@ export default function Home() {
   useEffect(() => {
     router.prefetch('/admin');
     router.prefetch('/dashboard');
+    router.prefetch('/hotel-admin');
   }, [router]);
 
   // Handle redirect immediately after authentication
   useEffect(() => {
     if (isAuthenticated && user && !isRedirecting) {
-      if (user.role?.includes('admin')) {
-        setIsRedirecting(true);
-        // Use Next.js router for smoother navigation
+      setIsRedirecting(true);
+      
+      if (user.role === 'super_admin') {
         router.push('/admin');
+      } else if (user.role === 'admin_hotel') {
+        router.push('/hotel-admin');
+      } else if (user.role === 'viewer') {
+        router.push('/dashboard');
       } else {
-        // Redirect viewer users to dashboard
-        setIsRedirecting(true);
         router.push('/dashboard');
       }
     }
@@ -53,14 +56,14 @@ export default function Home() {
   };
 
   const handleStartNow = () => {
-    if (isAuthenticated) {
-      // If user is admin, set redirecting state and navigate
-      if (user?.role?.includes('admin')) {
-        setIsRedirecting(true);
+    if (isAuthenticated && user) {
+      setIsRedirecting(true);
+      
+      if (user.role === 'super_admin') {
         router.push('/admin');
+      } else if (user.role === 'admin_hotel') {
+        router.push('/hotel-admin');
       } else {
-        // Redirect to user dashboard/booking page
-        setIsRedirecting(true);
         router.push('/dashboard');
       }
     } else {

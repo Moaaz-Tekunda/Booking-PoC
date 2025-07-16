@@ -2,7 +2,6 @@ from typing import Optional, Tuple
 from datetime import datetime, timedelta, timezone
 import hashlib
 from beanie import PydanticObjectId
-
 from app.models.user import User
 from app.models.auth import RefreshToken, TokenResponse
 from app.services.user_service import UserService
@@ -25,7 +24,6 @@ class AuthService:
         Args:
             email: User's email
             password: User's password
-            device_info: Optional device/browser information
             
         Returns:
             TokenResponse with access and refresh tokens, or None if authentication fails

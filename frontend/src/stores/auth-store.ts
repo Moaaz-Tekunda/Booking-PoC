@@ -4,7 +4,7 @@ import { User, AuthTokens, AuthState, LoginRequest, RegisterRequest } from '@/ty
 import apiClient from '@/lib/api';
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
-// Simple cookie-like storage using localStorage
+// storing refresh tokens seperately
 const tokenStorage = {
   get: (key: string) => {
     if (typeof window !== 'undefined') {

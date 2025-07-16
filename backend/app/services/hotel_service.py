@@ -1,7 +1,6 @@
 from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
-
 from app.models.hotel import Hotel, HotelCreate, HotelUpdate, HotelResponse
 
 

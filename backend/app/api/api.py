@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import bookings, users, hotels, rooms, auth, dashboard
+from app.api.endpoints import bookings, users, hotels, rooms, auth, dashboard
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["authentication"])

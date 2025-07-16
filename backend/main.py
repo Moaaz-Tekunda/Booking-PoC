@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
-from app.api.v1.api import api_router
+from app.api.api import api_router
 
 
 @asynccontextmanager
@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    openapi_url=f"{settings.API_STR}/openapi.json",
     lifespan=lifespan
 )
 
@@ -33,7 +33,7 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix=settings.API_STR)
 
 
 @app.get("/")
@@ -41,6 +41,3 @@ async def root():
     return {"message": "Welcome to Booking API"}
 
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}

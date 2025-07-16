@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     )
     
     PROJECT_NAME: str = "Booking API"
-    API_V1_STR: str = "/api/v1"
+    API_STR: str = "/api"
     
     # MongoDB settings - these will be overridden by .env values
     MONGODB_URL: str

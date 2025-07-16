@@ -1,11 +1,21 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
-from app.models.hotel import HotelCreate, HotelUpdate, HotelResponse
+from app.models.hotel import Hotel, HotelCreate, HotelUpdate, HotelResponse
 from app.models.user import User
 from app.services.hotel_service import HotelService
 from app.core.dependencies import get_current_user_optional, get_admin_user, get_current_active_user
 
 router = APIRouter()
+
+
+
+@router.get("/myHotels", response_model=List[HotelResponse])
+async def get_my_hotels(
+    current_user: User = Depends(get_current_active_user)
+):
+    return await HotelService.get_hotels_by_creator(str(current_user.id))
+    
+
 
 
 @router.post("/", response_model=HotelResponse, status_code=201)
@@ -20,7 +30,7 @@ async def create_hotel(
     **Business Logic:** Only hotel admins or super admins can create hotels
     """
     try:
-        return await HotelService.create_hotel(hotel)
+        return await HotelService.create_hotel(hotel, creator_id=str(current_user.id))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -111,3 +121,4 @@ async def search_hotels(
 ):
     """Search hotels by city or country"""
     return await HotelService.search_hotels(city=city, country=country)
+

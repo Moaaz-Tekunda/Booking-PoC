@@ -7,7 +7,6 @@ from app.core.dependencies import get_current_user_optional, get_admin_user
 
 router = APIRouter()
 
-
 @router.post("/", response_model=RoomResponse, status_code=201)
 async def create_room(
     room: RoomCreate,
@@ -18,15 +17,25 @@ async def create_room(
     
     **Access Level:** Admin (hotel admin or super admin)
     **Business Logic:**
-    - Hotel admins can only create rooms for their assigned hotel
+    - Hotel admins can only create rooms for hotels they created
     - Super admins can create rooms for any hotel
     """
-    # Hotel admins can only create rooms for their hotel
+
     if current_user.role == "admin_hotel":
-        if current_user.hotel_id != room.hotel_id:
+    
+        from app.services.hotel_service import HotelService
+        hotel = await HotelService.get_hotel(room.hotel_id)
+        
+        if not hotel:
+            raise HTTPException(
+                status_code=404,
+                detail="Hotel not found"
+            )
+        
+        if hotel.created_by != str(current_user.id):
             raise HTTPException(
                 status_code=403,
-                detail="Hotel admin can only create rooms for their assigned hotel"
+                detail="Hotel admin can only create rooms for hotels they own"
             )
     
     created_room = await RoomService.create_room(room)
@@ -36,7 +45,6 @@ async def create_room(
             detail="Could not create room. Hotel may not exist or room number already exists."
         )
     return created_room
-
 
 @router.get("/", response_model=List[RoomResponse])
 async def get_rooms(

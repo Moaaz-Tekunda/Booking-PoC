@@ -6,9 +6,13 @@ from app.models.hotel import Hotel, HotelCreate, HotelUpdate, HotelResponse
 
 class HotelService:
     @staticmethod
-    async def create_hotel(hotel_data: HotelCreate) -> HotelResponse:
+    async def create_hotel(hotel_data: HotelCreate, creator_id: Optional[str] = None) -> HotelResponse:
         """Create a new hotel"""
-        hotel = Hotel(**hotel_data.model_dump())
+        hotel_dict = hotel_data.model_dump()
+        if creator_id:
+            hotel_dict["created_by"] = creator_id
+
+        hotel = Hotel(**hotel_dict)
         await hotel.create()
         
         # Use model_validate to create response from hotel document
@@ -102,3 +106,16 @@ class HotelService:
             })
             for hotel in hotels
         ]
+    
+
+    @staticmethod
+    async def get_hotels_by_creator(creator_id: str) -> List[HotelResponse]:
+            hotels = await Hotel.find(Hotel.created_by == creator_id).to_list()
+            
+            return [
+                HotelResponse.model_validate({
+                    **hotel.model_dump(),
+                    "id": str(hotel.id)
+                })
+                for hotel in hotels
+            ]

@@ -7,6 +7,8 @@ from app.services.hotel_service import HotelService
 from app.services.booking_service import ReservationService
 from app.core.dependencies import get_admin_user
 from datetime import datetime, timedelta
+from app.core.dependencies import get_hotel_admin_user
+
 
 router = APIRouter()
 
@@ -18,6 +20,12 @@ class DashboardStats(BaseModel):
     total_revenue: float
     active_hotels: int
     pending_bookings: int
+    recent_activity: list[Dict[str, Any]]
+
+
+class HotelAdminDashboardStats(BaseModel):
+    my_hotels: int
+    total_reservations: int
     recent_activity: list[Dict[str, Any]]
 
 
@@ -135,5 +143,67 @@ def _time_ago(created_at: datetime) -> str:
     elif diff.seconds > 60:
         minutes = diff.seconds // 60
         return f"{minutes}m ago"
-    else:
+    else:   
         return "Just now"
+
+@router.get("/hotel-admin", response_model=HotelAdminDashboardStats)  
+async def get_hotel_admin_dashboard_stats(
+    current_user: User = Depends(get_hotel_admin_user)
+):
+    if current_user.role != "admin_hotel":
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    try:               
+        reservations = await ReservationService.get_reservations_by_hotel(
+            current_user.hotel_id, skip=0, limit=10000
+        )
+        hotels = await HotelService.get_hotels_by_creator(str(current_user.id))
+        total_hotels = len(hotels)
+        total_reservations = len(reservations)
+
+        recent_activity = generate_hotel_admin_recent_activity(reservations, hotels)
+
+        return HotelAdminDashboardStats(
+            my_hotels=total_hotels,
+            total_reservations=total_reservations,
+            recent_activity=recent_activity
+
+       )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching hotel admin dashboard stats: {str(e)}")
+    
+def generate_hotel_admin_recent_activity(reservations, hotels):
+    recent_activity = []
+    
+    # Add recent reservations (last 5)
+    recent_reservations = sorted(reservations, key=lambda x: x.created_at, reverse=True)[:5]
+    for reservation in recent_reservations:
+        # Find which hotel this reservation belongs to
+        hotel = next((h for h in hotels if str(h.id) == str(reservation.hotel_id)), None)
+        hotel_name = hotel.name if hotel else "Unknown Hotel"
+        
+        time_ago = _time_ago(reservation.created_at)
+        recent_activity.append({
+            "type": "reservation_created",
+            "title": "New reservation",
+            "description": f"${reservation.total_price} booking at {hotel_name}",
+            "time": time_ago,
+            "icon": "calendar"
+        })
+    
+    # Add recent hotel additions (last 2)
+    recent_hotels = sorted(hotels, key=lambda x: x.created_at, reverse=True)[:2]
+    for hotel in recent_hotels:
+        time_ago = _time_ago(hotel.created_at)
+        recent_activity.append({
+            "type": "hotel_added",
+            "title": "Hotel added",
+            "description": f"{hotel.name} in {hotel.city}",
+            "time": time_ago,
+            "icon": "building"
+        })
+    
+    # Sort by time and limit to 6 most recent activities
+    recent_activity.sort(key=lambda x: x["time"], reverse=False)
+    return recent_activity[:6]
+    

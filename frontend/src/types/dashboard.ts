@@ -23,3 +23,9 @@ export interface DashboardFilters {
   };
   hotelId?: string;
 }
+
+export interface HotelAdminStats {
+  my_hotels: number;
+  total_reservations: number;
+  recent_activity: RecentActivity[];
+}

@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api';
-import { DashboardStats } from '@/types/dashboard';
+import { DashboardStats, HotelAdminStats } from '@/types/dashboard';
 
 export const dashboardService = {
   /**
@@ -7,6 +7,14 @@ export const dashboardService = {
    */
   getStats: async (): Promise<DashboardStats> => {
     const response = await apiClient.get<DashboardStats>('/dashboard/stats');
+    return response.data;
+  },
+};
+
+
+export const hotelAdminService = {
+  getStats: async (): Promise<HotelAdminStats> => {
+    const response = await apiClient.get<HotelAdminStats>(`/dashboard/hotel-admin`);
     return response.data;
   },
 };

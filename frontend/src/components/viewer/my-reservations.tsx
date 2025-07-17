@@ -213,14 +213,7 @@ export default function MyReservations() {
                     <CardTitle className="text-xl">
                       {reservation.hotel?.name || 'Hotel Name'}
                     </CardTitle>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {reservation.hotel?.location || 'Location not available'}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-                      {reservation.hotel?.rating || 'N/A'}
-                    </div>
+                    
                   </div>
                   <div className="text-right space-y-2">
                     <Badge variant={getStatusColor(reservation.status || 'pending')}>

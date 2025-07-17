@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AdminHotelLayout from '@/components/hotel-admin/hotel-admin-layout';
 import HotelAdminDashboard from '@/components/hotel-admin/hotel-admin-dashboard';
+import { MyHotels } from '@/components/hotel-admin/my-hotels';
 
 export default function DashboardPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -52,10 +53,7 @@ export default function DashboardPage() {
         )}
 
         {activeSection === 'my hotels' && (
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-6">My Hotels</h1>
-            <p className="text-muted-foreground">View and manage your hotels</p>
-          </div>
+          <MyHotels />
         )}
 
         {activeSection === 'reservations' && (

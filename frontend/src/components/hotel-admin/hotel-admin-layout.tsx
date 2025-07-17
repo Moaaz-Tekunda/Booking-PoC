@@ -54,7 +54,7 @@ export default function AdminHotelLayout({
       id: 'hotels' as const,
       label: 'Hotels',
       icon: Building2,
-      description: 'Manage hotels'
+      description: 'View all hotels'
     },
     {
       id: 'my hotels' as const,

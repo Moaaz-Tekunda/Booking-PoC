@@ -41,5 +41,13 @@ export const hotelService = {
   async toggleHotelActive(hotelId: string, isActive: boolean): Promise<Hotel> {
     const response = await apiClient.put(`/hotels/${hotelId}`, { is_active: isActive });
     return response.data;
+  },
+
+  async getMyHotels()  {
+    const response = await apiClient.get('/hotels/myHotels');
+    return response.data;
   }
 };
+
+
+

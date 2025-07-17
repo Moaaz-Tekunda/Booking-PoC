@@ -3,7 +3,7 @@ from typing import List, Optional
 from app.models.hotel import Hotel, HotelCreate, HotelUpdate, HotelResponse
 from app.models.user import User
 from app.services.hotel_service import HotelService
-from app.core.dependencies import get_current_user_optional, get_admin_user, get_current_active_user
+from app.core.dependencies import get_current_user_optional, get_admin_user, get_current_active_user, get_hotel_admin_user
 
 router = APIRouter()
 
@@ -11,9 +11,20 @@ router = APIRouter()
 
 @router.get("/myHotels", response_model=List[HotelResponse])
 async def get_my_hotels(
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_hotel_admin_user)
 ):
-    return await HotelService.get_hotels_by_creator(str(current_user.id))
+    """
+    Get hotels created by the current hotel admin
+    
+    **Access Level:** Hotel Admin only
+    **Business Logic:** Returns only hotels created by the requesting hotel admin
+    """
+    
+    try:
+        hotels = await HotelService.get_hotels_by_creator(str(current_user.id))
+        return hotels
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to fetch hotels")
     
 
 
@@ -76,13 +87,24 @@ async def update_hotel(
     - Super admins can update any hotel
     - Hotel admins can only update their assigned hotel
     """
-    # Additional authorization: hotel admins can only update their own hotel
-    if current_user.role == "admin_hotel" and current_user.hotel_id != hotel_id:
-        raise HTTPException(
-            status_code=403, 
-            detail="Hotel admin can only update their assigned hotel"
-        )
+    print(f"[HOTEL UPDATE] User ID: {current_user.id}, Role: {current_user.role}, Updating Hotel ID: {hotel_id}")
     
+    # Additional authorization: hotel admins can only update their own hotel
+    if current_user.role == "admin_hotel":
+        # Check if the hotel belongs to this hotel admin
+        hotel_to_update = await HotelService.get_hotel(hotel_id)
+        if not hotel_to_update:
+            print(f"[HOTEL UPDATE] Hotel {hotel_id} not found")
+            raise HTTPException(status_code=404, detail="Hotel not found")
+        
+        if hotel_to_update.created_by != str(current_user.id):
+            print(f"[HOTEL UPDATE] Access denied - Hotel admin {current_user.id} trying to update hotel {hotel_id} not owned by them")
+            raise HTTPException(
+                status_code=403, 
+                detail="Hotel admin can only update their own hotels"
+            )
+    
+    print(f"[HOTEL UPDATE] Authorization passed for user {current_user.id} to update hotel {hotel_id}")
     hotel = await HotelService.update_hotel(hotel_id, hotel_update)
     if not hotel:
         raise HTTPException(status_code=404, detail="Hotel not found")
@@ -103,12 +125,7 @@ async def delete_hotel(
     - Hotel admins can only delete their assigned hotel
     """
     # Additional authorization: hotel admins can only delete their own hotel
-    if current_user.role == "admin_hotel" and current_user.hotel_id != hotel_id:
-        raise HTTPException(
-            status_code=403, 
-            detail="Hotel admin can only delete their assigned hotel"
-        )
-    
+    print(f"[HOTEL DELETE] User ID: {current_user.id}, Role: {current_user.role}, Deleting Hotel ID: {hotel_id}")
     success = await HotelService.delete_hotel(hotel_id)
     if not success:
         raise HTTPException(status_code=404, detail="Hotel not found")

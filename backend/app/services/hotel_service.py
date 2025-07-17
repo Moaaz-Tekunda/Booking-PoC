@@ -77,11 +77,11 @@ class HotelService:
 
     @staticmethod
     async def delete_hotel(hotel_id: str) -> bool:
-        """Delete a hotel (soft delete by setting is_active to False)"""
+        """Delete a hotel (hard delete - permanently removes from database)"""
         try:
             hotel = await Hotel.get(PydanticObjectId(hotel_id))
             if hotel:
-                await hotel.update({"$set": {"is_active": False}})
+                await hotel.delete()
                 return True
         except Exception:
             pass

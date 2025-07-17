@@ -82,12 +82,15 @@ async def get_super_admin_user(current_user: User = Depends(get_current_active_u
 
 
 async def get_hotel_admin_user(current_user: User = Depends(get_current_active_user)) -> User:
-    """Dependency that requires hotel admin role for a specific hotel"""
-    if current_user.role not in ["admin_hotel"]:
+    """Dependency that requires hotel admin role for a specific hotel"""    
+    if current_user.role != "admin_hotel":
+        print(f"[DEPENDENCY] Access denied - User {current_user.id} has role '{current_user.role}' but needs 'admin_hotel'")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Hotel admin access required"
         )
+    
+    print(f"[DEPENDENCY] Hotel admin access granted for user {current_user.id}")
     return current_user
 
 

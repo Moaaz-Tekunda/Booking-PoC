@@ -54,11 +54,16 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
       if (hotel && formData.checkIn && formData.checkOut && step === 'rooms') {
         setLoadingRooms(true);
         try {
-          const hotelRooms = await BookingService.getRoomsByHotel(hotel.id);
-          console.log('Loaded rooms:', hotelRooms); // Debug log
-          setRooms(hotelRooms);
+          // Use the new available rooms endpoint with the selected dates
+          const availableRooms = await BookingService.getAvailableRooms(
+            hotel.id, 
+            formData.checkIn, 
+            formData.checkOut
+          );
+          console.log('Loaded available rooms:', availableRooms); // Debug log
+          setRooms(availableRooms);
         } catch (error) {
-          console.error('Error loading rooms:', error);
+          console.error('Error loading available rooms:', error);
           setRooms([]);
         } finally {
           setLoadingRooms(false);

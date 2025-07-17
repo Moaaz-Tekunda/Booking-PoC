@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List
 from app.models.booking import ReservationCreate, ReservationUpdate, ReservationResponse
+from app.models.room import RoomResponse
 from app.models.user import User
 from app.services.booking_service import ReservationService
 from app.core.dependencies import get_current_active_user, get_admin_user
@@ -235,3 +236,27 @@ async def get_my_reservations(
     **Business Logic:** Users can view their own reservations
     """
     return await ReservationService.get_reservations_by_user(str(current_user.id), skip=skip, limit=limit)
+
+
+@router.get("/available-rooms/{hotel_id}", response_model=List[RoomResponse])
+async def get_available_rooms(
+    hotel_id: str,
+    start_date: str = Query(..., description="Start date in YYYY-MM-DD format"),
+    end_date: str = Query(..., description="End date in YYYY-MM-DD format")
+):
+    """
+    Get available rooms for a hotel within the specified date range (Public access)
+    
+    **Access Level:** Public
+    **Business Logic:** Anyone can check room availability for booking purposes
+    """
+    try:
+        available_rooms = await ReservationService.get_available_rooms_by_hotel(
+            hotel_id, start_date, end_date
+        )
+        return available_rooms
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error getting available rooms: {str(e)}"
+        )

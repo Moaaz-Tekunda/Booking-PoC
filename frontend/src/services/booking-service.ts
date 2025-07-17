@@ -24,6 +24,21 @@ export class BookingService {
     }
   }
 
+  static async getAvailableRooms(hotelId: string, startDate: string, endDate: string): Promise<Room[]> {
+    try {
+      const response = await apiClient.get(`/reservations/available-rooms/${hotelId}`, {
+        params: {
+          start_date: startDate,
+          end_date: endDate
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching available rooms:', error);
+      return [];
+    }
+  }
+
   static async createReservation(reservationData: ReservationCreate): Promise<ReservationResponse | null> {
     try {
       const response = await apiClient.post('/reservations/', reservationData);

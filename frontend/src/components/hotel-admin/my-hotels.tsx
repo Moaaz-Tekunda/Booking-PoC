@@ -24,10 +24,12 @@ import {
   AlertCircle,
   Star,
   Eye,
-  EyeOff
+  EyeOff,
+  Bed
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import HotelModal from '@/components/admin/hotel-modal';
+import RoomsManagement from './rooms-management';
 import { useState } from 'react';
 import { Hotel } from '@/types/hotel';
 
@@ -49,6 +51,8 @@ export const MyHotels = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'hotels' | 'rooms'>('hotels');
+  const [selectedHotelForRooms, setSelectedHotelForRooms] = useState<Hotel | null>(null);
   if (error) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -124,31 +128,43 @@ export const MyHotels = () => {
     });
   };
 
+  const handleManageRooms = (hotel: Hotel) => {
+    setSelectedHotelForRooms(hotel);
+    setViewMode('rooms');
+  };
+
+  const handleBackToHotels = () => {
+    setViewMode('hotels');
+    setSelectedHotelForRooms(null);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Expanded Card Overlay */}
-      {expandedCard && (
-        <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" onClick={() => setExpandedCard(null)} />
-      )}
+      {viewMode === 'hotels' ? (
+        <>
+          {/* Expanded Card Overlay */}
+          {expandedCard && (
+            <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" onClick={() => setExpandedCard(null)} />
+          )}
 
-        {/*"header part"*/}
-       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <Building2 className="h-6 w-6 text-primary" />
-            Hotels Management
-          </h2>
-          <p className="text-muted-foreground">Manage hotel properties and settings</p>
-        </div>
-        
-        <Button 
-          onClick={handleCreateHotel}
-          className="bg-gradient-primary hover:shadow-glow hover:scale-105 transition-all duration-300"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Hotel
-        </Button>
-      </div> 
+            {/*"header part"*/}
+           <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+                <Building2 className="h-6 w-6 text-primary" />
+                Hotels Management
+              </h2>
+              <p className="text-muted-foreground">Manage hotel properties and settings</p>
+            </div>
+            
+            <Button 
+              onClick={handleCreateHotel}
+              className="bg-gradient-primary hover:shadow-glow hover:scale-105 transition-all duration-300"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Hotel
+            </Button>
+          </div> 
      {/*filters */}
       <div className="flex flex-col sm:flex-row gap-4">
       <div className="relative flex-1">
@@ -344,6 +360,18 @@ export const MyHotels = () => {
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
+                        handleManageRooms(hotel);
+                      }}
+                      className="flex-1"
+                    >
+                      <Building2 className="h-4 w-4 mr-2" />
+                      Rooms
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
                         handleToggleActive(hotel);
                       }}
                       className="flex-1"
@@ -400,6 +428,14 @@ export const MyHotels = () => {
       hotel={modalState.hotel}
       mode={modalState.mode}
     />
-  </div>
-);
+        </>
+      ) : (
+        <RoomsManagement 
+          hotelId={selectedHotelForRooms!.id}
+          hotelName={selectedHotelForRooms!.name}
+          onBack={handleBackToHotels}
+        />
+      )}
+    </div>
+  );
 };

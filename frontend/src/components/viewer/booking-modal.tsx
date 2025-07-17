@@ -173,8 +173,8 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
         hotel_id: hotel.id,
         room_id: selectedRoom.id,
         visitor_id: user.id,
-        start_date: formData.checkIn, // Already in YYYY-MM-DD format
-        end_date: formData.checkOut,   // Already in YYYY-MM-DD format
+        start_date: formData.checkIn, 
+        end_date: formData.checkOut, 
         type: formData.reservationType,
         status: ReservationStatus.CONFIRMED,
         total_price: calculateTotalPrice()
@@ -459,39 +459,6 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
 
           {step === 'payment' && (
             <div className="space-y-6">
-              {/* Guest Information */}
-              <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">Guest Information</h3>
-                <div className="bg-background/50 rounded-xl p-4 border border-border">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
-                      <input
-                        type="text"
-                        defaultValue={user?.name || ''}
-                        className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-foreground"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Email</label>
-                      <input
-                        type="email"
-                        defaultValue={user?.email || ''}
-                        className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-foreground"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Phone Number</label>
-                      <input
-                        type="tel"
-                        defaultValue={user?.mobile_number || ''}
-                        className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-foreground"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Payment Information */}
               <div>
                 <h3 className="text-lg font-medium text-foreground mb-4">Payment Information</h3>

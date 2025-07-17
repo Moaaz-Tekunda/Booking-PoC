@@ -29,7 +29,11 @@ import { useHotels, useDeleteHotel, useToggleHotelActive } from '@/hooks/use-hot
 import { useAuth } from '@/hooks/use-auth';
 import HotelModal from './hotel-modal';
 
-export default function HotelsGrid() {
+interface HotelsGridProps {
+  readOnly?: boolean;
+}
+
+export default function HotelsGrid({ readOnly = false }: HotelsGridProps) {
   const { user: currentUser } = useAuth();
   const { data: hotels = [], isLoading, error } = useHotels({ active_only: false }); // Get ALL hotels for admin management
   const deleteHotelMutation = useDeleteHotel();
@@ -137,13 +141,15 @@ export default function HotelsGrid() {
           <p className="text-muted-foreground">Manage hotel properties and settings</p>
         </div>
         
-        <Button 
-          onClick={handleCreateHotel}
-          className="bg-gradient-primary hover:shadow-glow hover:scale-105 transition-all duration-300"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Hotel
-        </Button>
+        {!readOnly && (
+          <Button 
+            onClick={handleCreateHotel}
+            className="bg-gradient-primary hover:shadow-glow hover:scale-105 transition-all duration-300"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Hotel
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -324,49 +330,51 @@ export default function HotelsGrid() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-2 pt-4">
-                      {canEditHotel && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(hotel);
-                          }}
-                          className="flex-1"
-                        >
-                          <Edit3 className="h-4 w-4 mr-2" />
-                          Edit
-                        </Button>
-                      )}
-                      {canEditHotel && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleActive(hotel);
-                          }}
-                          className="flex-1"
-                        >
-                          {hotel.is_active ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
-                          {hotel.is_active ? 'Deactivate' : 'Activate'}
-                        </Button>
-                      )}
-                      {canDeleteHotel && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(hotel);
-                          }}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
+                    {!readOnly && (
+                      <div className="flex gap-2 pt-4">
+                        {canEditHotel && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(hotel);
+                            }}
+                            className="flex-1"
+                          >
+                            <Edit3 className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                        )}
+                        {canEditHotel && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleActive(hotel);
+                            }}
+                            className="flex-1"
+                          >
+                            {hotel.is_active ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
+                            {hotel.is_active ? 'Deactivate' : 'Activate'}
+                          </Button>
+                        )}
+                        {canDeleteHotel && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(hotel);
+                            }}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import AdminHotelLayout from '@/components/hotel-admin/hotel-admin-layout';
 import HotelAdminDashboard from '@/components/hotel-admin/hotel-admin-dashboard';
 import { MyHotels } from '@/components/hotel-admin/my-hotels';
+import HotelsGrid from '@/components/admin/hotels-grid';
 
 export default function DashboardPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -46,10 +47,7 @@ export default function DashboardPage() {
         )}
 
         {activeSection === 'hotels' && (
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-6">Hotels Management</h1>
-            <p className="text-muted-foreground">Manage all hotels in the system</p>
-          </div>
+          <HotelsGrid readOnly={true} />
         )}
 
         {activeSection === 'my hotels' && (

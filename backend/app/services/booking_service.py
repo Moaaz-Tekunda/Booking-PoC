@@ -13,6 +13,7 @@ class ReservationService:
     async def create_reservation(reservation_data: ReservationCreate) -> Optional[ReservationResponse]:
         """Create a new reservation"""
         try:
+            print(f"Creating reservation: {reservation_data}")  # For debugging
             # Verify all referenced entities exist
             hotel = await Hotel.get(PydanticObjectId(reservation_data.hotel_id))
             room = await Room.get(PydanticObjectId(reservation_data.room_id))

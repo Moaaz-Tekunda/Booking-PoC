@@ -110,12 +110,21 @@ async def update_room(
     if not existing_room:
         raise HTTPException(status_code=404, detail="Room not found")
     
-    # Hotel admins can only update rooms from their hotel
+    # Hotel admins can only update rooms from hotels they created
     if current_user.role == "admin_hotel":
-        if current_user.hotel_id != existing_room.hotel_id:
+        from app.services.hotel_service import HotelService
+        hotel = await HotelService.get_hotel(existing_room.hotel_id)
+        
+        if not hotel:
+            raise HTTPException(
+                status_code=404,
+                detail="Hotel not found"
+            )
+        
+        if hotel.created_by != str(current_user.id):
             raise HTTPException(
                 status_code=403,
-                detail="Hotel admin can only update rooms from their assigned hotel"
+                detail="Hotel admin can only update rooms from hotels they own"
             )
     
     room = await RoomService.update_room(room_id, room_update)
@@ -145,12 +154,21 @@ async def delete_room(
     if not existing_room:
         raise HTTPException(status_code=404, detail="Room not found")
     
-    # Hotel admins can only delete rooms from their hotel
+    # Hotel admins can only delete rooms from hotels they created
     if current_user.role == "admin_hotel":
-        if current_user.hotel_id != existing_room.hotel_id:
+        from app.services.hotel_service import HotelService
+        hotel = await HotelService.get_hotel(existing_room.hotel_id)
+        
+        if not hotel:
+            raise HTTPException(
+                status_code=404,
+                detail="Hotel not found"
+            )
+        
+        if hotel.created_by != str(current_user.id):
             raise HTTPException(
                 status_code=403,
-                detail="Hotel admin can only delete rooms from their assigned hotel"
+                detail="Hotel admin can only delete rooms from hotels they own"
             )
     
     success = await RoomService.delete_room(room_id)

@@ -49,10 +49,63 @@ export class BookingService {
     }
   }
 
-  static async getUserReservations(userId: string): Promise<Reservation[]> {
+  static async getUserReservations(userId: string): Promise<any[]> {
     try {
-      const response = await apiClient.get(`/reservations/user/${userId}`);
-      return response.data;
+      const response = await apiClient.get(`/reservations/my-reservations`);
+      const reservations = response.data;
+      
+      // Enhance reservations with hotel and room details
+      const enhancedReservations = await Promise.all(
+        reservations.map(async (reservation: any) => {
+          try {
+            // Fetch hotel details
+            const hotelResponse = await apiClient.get(`/hotels/${reservation.hotel_id}`);
+            const hotel = hotelResponse.data;
+            
+            // Fetch room details
+            const roomResponse = await apiClient.get(`/rooms/${reservation.room_id}`);
+            const room = roomResponse.data;
+            
+            return {
+              ...reservation,
+              hotel: {
+                name: hotel.name,
+                location: `${hotel.city}, ${hotel.country}`,
+                address: hotel.address,
+                contact_phone: hotel.contact_phone,
+                contact_email: hotel.contact_email,
+                has_wifi: hotel.has_wifi,
+                has_parking: hotel.has_parking,
+                has_gym: hotel.has_gym,
+                has_spa: hotel.has_spa
+              },
+              room: {
+                room_number: room.room_number,
+                type: room.type,
+                price_per_night: room.price_per_night,
+                max_occupancy: room.max_occupancy,
+                description: room.description
+              }
+            };
+          } catch (error) {
+            console.error(`Error fetching details for reservation ${reservation.id}:`, error);
+            // Return reservation with fallback data if fetch fails
+            return {
+              ...reservation,
+              hotel: {
+                name: 'Hotel Information Unavailable',
+                location: 'Location Unknown'
+              },
+              room: {
+                type: 'Room Information Unavailable',
+                price_per_night: 0
+              }
+            };
+          }
+        })
+      );
+      
+      return enhancedReservations;
     } catch (error) {
       console.error('Error fetching user reservations:', error);
       return [];

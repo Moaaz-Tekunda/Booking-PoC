@@ -61,6 +61,21 @@ async def get_reservations(
     return await ReservationService.get_reservations(skip=skip, limit=limit)
 
 
+@router.get("/my-reservations", response_model=List[ReservationResponse])
+async def get_my_reservations(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Get current user's reservations
+    
+    **Access Level:** Authenticated users
+    **Business Logic:** Users can view their own reservations
+    """
+    return await ReservationService.get_reservations_by_user(str(current_user.id), skip=skip, limit=limit)
+
+
 @router.get("/{reservation_id}", response_model=ReservationResponse)
 async def get_reservation(
     reservation_id: str,
@@ -221,21 +236,6 @@ async def get_reservations_by_user(
     # Super admin can view any user's reservations (no additional checks needed)
     
     return await ReservationService.get_reservations_by_user(user_id, skip=skip, limit=limit)
-
-
-@router.get("/my-reservations", response_model=List[ReservationResponse])
-async def get_my_reservations(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
-    current_user: User = Depends(get_current_active_user)
-):
-    """
-    Get current user's reservations
-    
-    **Access Level:** Authenticated users
-    **Business Logic:** Users can view their own reservations
-    """
-    return await ReservationService.get_reservations_by_user(str(current_user.id), skip=skip, limit=limit)
 
 
 @router.get("/available-rooms/{hotel_id}", response_model=List[RoomResponse])

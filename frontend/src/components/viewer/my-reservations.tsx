@@ -22,17 +22,20 @@ interface ReservationWithDetails extends BaseReservation {
   hotel?: {
     name: string;
     location: string;
-    image_url: string;
-    rating: number;
-    contact_info: {
-      phone: string;
-      email: string;
-    };
+    address: string;
+    contact_phone: string;
+    contact_email: string;
+    has_wifi: boolean;
+    has_parking: boolean;
+    has_gym: boolean;
+    has_spa: boolean;
   };
   room?: {
+    room_number: string;
     type: string;
     price_per_night: number;
-    amenities: string[];
+    max_occupancy: number;
+    description?: string;
   };
   guests?: number;
   payment_status?: 'pending' | 'paid' | 'refunded';
@@ -280,12 +283,12 @@ export default function MyReservations() {
                       </div>
                     </div>
                     
-                    {reservation.hotel?.contact_info?.phone && (
+                    {reservation.hotel?.contact_phone && (
                       <div className="flex items-center">
                         <Phone className="h-4 w-4 mr-2 text-gray-500" />
                         <div>
                           <p className="text-sm font-medium">Hotel Contact</p>
-                          <p className="text-sm text-gray-600">{reservation.hotel.contact_info.phone}</p>
+                          <p className="text-sm text-gray-600">{reservation.hotel.contact_phone}</p>
                         </div>
                       </div>
                     )}
@@ -309,17 +312,11 @@ export default function MyReservations() {
                 <div className="flex gap-2 pt-4 border-t">
                   {(reservation.status === 'confirmed' || reservation.status === 'pending') && (
                     <Button
-                      variant="destructive"
                       size="sm"
                       onClick={() => handleCancelReservation(reservationId)}
+                      className="bg-red-600 hover:bg-red-700 text-white border-red-600 hover:border-red-700"
                     >
                       Cancel Reservation
-                    </Button>
-                  )}
-                  
-                  {reservation.hotel?.contact_info?.phone && (
-                    <Button variant="outline" size="sm">
-                      Contact Hotel
                     </Button>
                   )}
                 </div>

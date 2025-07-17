@@ -149,7 +149,7 @@ export function ViewerSidebar({
                   {user?.email}
                 </p>
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary mt-1">
-                  GUEST
+                  Viewer
                 </span>
               </div>
             </div>

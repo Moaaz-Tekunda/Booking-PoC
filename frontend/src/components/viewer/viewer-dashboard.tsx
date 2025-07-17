@@ -90,6 +90,7 @@ export default function ViewerDashboard() {
                 favorites={favorites}
                 onToggleFavorite={toggleFavorite}
                 onBookNow={handleBookNow}
+                showOnlyAvailable={true}
               />
             </div>
           </>

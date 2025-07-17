@@ -10,6 +10,7 @@ interface HotelGridProps {
   favorites: string[];
   onToggleFavorite: (hotelId: string) => void;
   onBookNow: (hotel: Hotel) => void;
+  showOnlyAvailable?: boolean;
 }
 
 export function HotelGrid({ 
@@ -17,9 +18,20 @@ export function HotelGrid({
   isLoading, 
   favorites, 
   onToggleFavorite, 
-  onBookNow 
+  onBookNow,
+  showOnlyAvailable = false
 }: HotelGridProps) {
   const { getHotelPrice } = useHotelPrices(hotels);
+
+  // Filter hotels based on room availability if requested
+  const filteredHotels = showOnlyAvailable 
+    ? hotels.filter(hotel => {
+        const hotelPrice = getHotelPrice(hotel.id);
+        // Only show hotels where we have confirmed available rooms (price > 0)
+        // Exclude hotels that are still loading or have no available rooms
+        return !hotelPrice.loading && hotelPrice.price !== null && hotelPrice.price > 0;
+      })
+    : hotels;
 
   if (isLoading) {
     return (
@@ -38,13 +50,20 @@ export function HotelGrid({
     );
   }
 
-  if (hotels.length === 0) {
+  if (filteredHotels.length === 0 && !isLoading) {
     return (
       <div className="text-center py-12">
         <div className="bg-card rounded-2xl p-8 max-w-md mx-auto border border-border">
           <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">No hotels found</h3>
-          <p className="text-muted-foreground">Try adjusting your search criteria or filters</p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">
+            {showOnlyAvailable ? 'No hotels with available rooms found' : 'No hotels found'}
+          </h3>
+          <p className="text-muted-foreground">
+            {showOnlyAvailable 
+              ? 'Try adjusting your search criteria or check back later for availability'
+              : 'Try adjusting your search criteria or filters'
+            }
+          </p>
         </div>
       </div>
     );
@@ -52,7 +71,7 @@ export function HotelGrid({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {hotels.map((hotel) => {
+      {filteredHotels.map((hotel) => {
         const isFavorite = favorites.includes(hotel.id);
         const hotelImages = hotel.gallery.length > 0 ? hotel.gallery : generateHotelImages(hotel.id, hotel.name);
         const rating = generateHotelRating(hotel.id);

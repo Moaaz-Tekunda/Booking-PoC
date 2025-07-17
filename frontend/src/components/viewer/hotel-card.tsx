@@ -150,13 +150,8 @@ export function HotelCard({
           </div>
         </div>
 
-        {/* Capacity */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Users className="h-4 w-4" />
-            <span>Max {hotel.max_reservations_capacity} guests</span>
-          </div>
-          
+        {/* Price */}
+        <div className="flex justify-end mb-4">
           <div className="text-right">
             <p className="text-sm text-muted-foreground">From</p>
             {isPriceLoading ? (

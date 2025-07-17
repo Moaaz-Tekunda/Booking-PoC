@@ -113,7 +113,9 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
 
   const calculateTotalPrice = () => {
     const nights = calculateNights();
-    const basePrice = selectedRoom?.price_per_night || 120; // Use correct field name
+    if (!selectedRoom || !selectedRoom.price_per_night) return 0;
+    
+    const basePrice = selectedRoom.price_per_night;
     let multiplier = 1;
     
     switch (formData.reservationType) {
@@ -340,22 +342,20 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                 />
               </div>
 
-              {/* Price Summary */}
+              {/* Info about next step */}
               {nights > 0 && (
-                <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
-                  <h4 className="font-medium text-foreground mb-3">Price Summary</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{nights} night{nights > 1 ? 's' : ''} × {formData.guests} guest{formData.guests > 1 ? 's' : ''}</span>
-                      <span className="text-foreground">${(nights * (selectedRoom?.price_per_night || 120) * formData.guests).toLocaleString()}</span>
+                <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/20">
+                  <div className="flex items-start gap-3">
+                    <div className="text-blue-500 mt-0.5">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Reservation type</span>
-                      <span className="text-foreground">{formData.reservationType.replace('_', ' ')}</span>
-                    </div>
-                    <div className="border-t border-border pt-2 flex justify-between font-medium">
-                      <span className="text-foreground">Total</span>
-                      <span className="text-primary text-lg">${totalPrice.toLocaleString()}</span>
+                    <div className="text-sm">
+                      <p className="font-medium text-blue-500 mb-1">Ready to select your room</p>
+                      <p className="text-blue-500/80">
+                        You'll see available rooms and their prices in the next step for your {nights} night{nights > 1 ? 's' : ''} stay.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -418,7 +418,7 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                               </div>
                               {roomPrice > 0 && (
                                 <div className="text-sm text-muted-foreground">
-                                  Total: ${(roomPrice * calculateNights()).toLocaleString()}
+                                  Base: ${(roomPrice * calculateNights()).toLocaleString()}
                                 </div>
                               )}
                             </div>
@@ -438,20 +438,26 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
               {/* Updated Price Summary */}
               {selectedRoom && nights > 0 && (
                 <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
-                  <h4 className="font-medium text-foreground mb-3">Price Summary</h4>
+                  <h4 className="font-medium text-foreground mb-3">Price Breakdown</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Room {selectedRoom.room_number} × {nights} night{nights > 1 ? 's' : ''}</span>
-                      <span className="text-foreground">${(nights * selectedRoom.price_per_night).toLocaleString()}</span>
+                      <span className="text-muted-foreground">Room {selectedRoom.room_number} ({selectedRoom.type})</span>
+                      <span className="text-foreground">${selectedRoom.price_per_night}/night</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Guests: {formData.guests}</span>
-                      <span className="text-foreground">×{formData.guests}</span>
+                      <span className="text-muted-foreground">{nights} night{nights > 1 ? 's' : ''} × {formData.guests} guest{formData.guests > 1 ? 's' : ''}</span>
+                      <span className="text-foreground">${(nights * selectedRoom.price_per_night * formData.guests).toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Reservation type</span>
-                      <span className="text-foreground">{formData.reservationType.replace('_', ' ')}</span>
-                    </div>
+                    {formData.reservationType !== ReservationType.ROOM_ONLY && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          {formData.reservationType === ReservationType.BED_BREAKFAST ? 'Bed & Breakfast (+20%)' : 'All Inclusive (+80%)'}
+                        </span>
+                        <span className="text-foreground">
+                          +${(nights * selectedRoom.price_per_night * formData.guests * (formData.reservationType === ReservationType.BED_BREAKFAST ? 0.2 : 0.8)).toLocaleString()}
+                        </span>
+                      </div>
+                    )}
                     <div className="border-t border-border pt-2 flex justify-between font-medium">
                       <span className="text-foreground">Total</span>
                       <span className="text-primary text-lg">${calculateTotalPrice().toLocaleString()}</span>
@@ -616,7 +622,12 @@ export default function BookingModal({ isOpen, onClose, hotel, initialBookingDat
                 <Button 
                   onClick={handleNext} 
                   className="flex-1 bg-primary hover:bg-primary/90"
-                  disabled={!selectedRoom || (selectedRoom && formData.guests > selectedRoom.max_occupancy)}
+                  disabled={
+                    !selectedRoom || 
+                    !selectedRoom.price_per_night || 
+                    selectedRoom.price_per_night <= 0 ||
+                    formData.guests > selectedRoom.max_occupancy
+                  }
                 >
                   Continue to Payment
                 </Button>

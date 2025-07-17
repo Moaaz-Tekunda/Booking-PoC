@@ -61,7 +61,8 @@ export const generateHotelRating = (hotelId: string): number => {
   return 3.5 + (hash % 15) / 10; // Rating between 3.5 and 5.0
 };
 
-// Get price per night (placeholder function)
+// Get price per night (placeholder function) - DEPRECATED
+// Use hotelService.getCheapestRoomPrice() instead for real room prices
 export const generateHotelPrice = (hotelId: string, city: string): number => {
   const hash = hotelId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const cityHash = city.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);

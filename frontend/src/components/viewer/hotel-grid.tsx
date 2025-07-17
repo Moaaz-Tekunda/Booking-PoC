@@ -1,7 +1,8 @@
 import { Search } from 'lucide-react';
 import { HotelCard } from './hotel-card';
 import { Hotel } from '@/types/hotel';
-import { generateHotelImages, generateHotelRating, generateHotelPrice } from '@/utils/hotel-utils';
+import { generateHotelImages, generateHotelRating } from '@/utils/hotel-utils';
+import { useHotelPrices } from '@/hooks/use-hotel-prices';
 
 interface HotelGridProps {
   hotels: Hotel[];
@@ -18,6 +19,8 @@ export function HotelGrid({
   onToggleFavorite, 
   onBookNow 
 }: HotelGridProps) {
+  const { getHotelPrice } = useHotelPrices(hotels);
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -53,7 +56,10 @@ export function HotelGrid({
         const isFavorite = favorites.includes(hotel.id);
         const hotelImages = hotel.gallery.length > 0 ? hotel.gallery : generateHotelImages(hotel.id, hotel.name);
         const rating = generateHotelRating(hotel.id);
-        const pricePerNight = generateHotelPrice(hotel.id, hotel.city);
+        const hotelPrice = getHotelPrice(hotel.id);
+        
+        // Use real room price if available, otherwise show placeholder
+        const pricePerNight = hotelPrice.price || 0;
 
         return (
           <HotelCard
@@ -65,6 +71,7 @@ export function HotelGrid({
             isFavorite={isFavorite}
             onToggleFavorite={() => onToggleFavorite(hotel.id)}
             onBookNow={() => onBookNow(hotel)}
+            isPriceLoading={hotelPrice.loading}
           />
         );
       })}

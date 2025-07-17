@@ -32,6 +32,7 @@ interface HotelCardProps {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onBookNow: () => void;
+  isPriceLoading?: boolean;
 }
 
 export function HotelCard({ 
@@ -41,7 +42,8 @@ export function HotelCard({
   pricePerNight, 
   isFavorite, 
   onToggleFavorite, 
-  onBookNow 
+  onBookNow,
+  isPriceLoading = false 
 }: HotelCardProps) {
   return (
     <div className="bg-card rounded-2xl border border-border overflow-hidden group hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.02] transition-all duration-300">
@@ -157,16 +159,36 @@ export function HotelCard({
           
           <div className="text-right">
             <p className="text-sm text-muted-foreground">From</p>
-            <p className="text-lg font-bold text-foreground">${pricePerNight}<span className="text-sm font-normal">/night</span></p>
+            {isPriceLoading ? (
+              <div className="h-6 w-16 bg-muted/30 rounded animate-pulse"></div>
+            ) : pricePerNight > 0 ? (
+              <p className="text-lg font-bold text-foreground">
+                ${pricePerNight}<span className="text-sm font-normal">/night</span>
+              </p>
+            ) : (
+              <p className="text-lg font-bold text-muted-foreground">
+                --<span className="text-sm font-normal">/night</span>
+              </p>
+            )}
           </div>
         </div>
 
         {/* Action Button */}
         <Button
           onClick={onBookNow}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200"
+          disabled={isPriceLoading || pricePerNight <= 0}
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          Book Now
+          {isPriceLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+              Loading...
+            </div>
+          ) : pricePerNight <= 0 ? (
+            'No Rooms Available'
+          ) : (
+            'Book Now'
+          )}
         </Button>
       </div>
     </div>

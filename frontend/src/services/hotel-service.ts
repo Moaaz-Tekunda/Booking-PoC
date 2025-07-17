@@ -46,6 +46,32 @@ export const hotelService = {
   async getMyHotels()  {
     const response = await apiClient.get('/hotels/myHotels');
     return response.data;
+  },
+
+  // Get cheapest room price for a hotel
+  async getCheapestRoomPrice(hotelId: string): Promise<number | null> {
+    try {
+      const response = await apiClient.get(`/rooms/hotel/${hotelId}`);
+      const rooms = response.data;
+      
+      if (!Array.isArray(rooms) || rooms.length === 0) {
+        return null;
+      }
+      
+      // Find the minimum price from available rooms
+      const prices = rooms
+        .filter((room: any) => {
+          return room && 
+                 typeof room.price_per_night === 'number' && 
+                 room.price_per_night > 0;
+        })
+        .map((room: any) => room.price_per_night);
+      
+      return prices.length > 0 ? Math.min(...prices) : null;
+    } catch (error) {
+      console.error(`Error fetching cheapest room price for hotel ${hotelId}:`, error);
+      return null;
+    }
   }
 };
 

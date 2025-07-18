@@ -305,9 +305,6 @@ export default function UsersGrid() {
                 {/* Status Indicator */}
                 <div className="flex items-center justify-between mt-4">
                   <div className={`w-2 h-2 rounded-full ${user.is_active ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                  <span className="text-xs text-muted-foreground">
-                    ID: {user.id}
-                  </span>
                 </div>
               </div>
             );

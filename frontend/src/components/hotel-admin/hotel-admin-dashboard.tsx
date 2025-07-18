@@ -7,6 +7,11 @@ import { toast } from 'sonner';
 
 export default function HotelAdminDashboard() {
   const { stats, isLoading, error, refetch } = useHotelAdminStats();
+  
+  // Debug logging
+  console.log('Stats data:', stats);
+  console.log('Recent activity:', stats?.recent_activity);
+  
   const statCards = [
     {
       title: 'Hotels',
@@ -91,6 +96,103 @@ export default function HotelAdminDashboard() {
             </div>
           );
         })}
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Clock className="h-5 w-5 text-primary" />
+            Recent Activity
+          </h3>
+        </div>
+        
+        <div className="space-y-4">
+          {isLoading ? (
+            // Loading skeleton
+            Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="flex items-center gap-4 p-4 rounded-xl">
+                <div className="w-10 h-10 rounded-full bg-muted/30 animate-pulse"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-muted/30 rounded animate-pulse w-3/4"></div>
+                  <div className="h-3 bg-muted/30 rounded animate-pulse w-1/2"></div>
+                </div>
+                <div className="h-3 bg-muted/30 rounded animate-pulse w-16"></div>
+              </div>
+            ))
+          ) : (stats?.recent_activity && stats.recent_activity.length > 0) ? (
+            // Real activity data
+            stats.recent_activity.map((activity: any, index: number) => {
+              const getIcon = () => {
+                switch (activity.icon || activity.type) {
+                  case 'users': 
+                  case 'user_registration':
+                  case 'check-in':
+                  case 'check-out': 
+                    return Users;
+                  case 'building': 
+                  case 'hotel_added': 
+                    return Building2;
+                  case 'calendar': 
+                  case 'booking':
+                  case 'booking_created': 
+                    return Calendar;
+                  case 'cancellation': 
+                    return Clock;
+                  default: 
+                    return CheckCircle;
+                }
+              };
+              const Icon = getIcon();
+              
+              const getIconColor = () => {
+                switch (activity.type) {
+                  case 'user_registration':
+                  case 'check-in':
+                    return 'text-blue-500 bg-blue-500/20';
+                  case 'hotel_added':
+                    return 'text-purple-500 bg-purple-500/20';
+                  case 'booking':
+                  case 'booking_created':
+                    return 'text-green-500 bg-green-500/20';
+                  case 'cancellation':
+                    return 'text-red-500 bg-red-500/20';
+                  case 'check-out':
+                    return 'text-orange-500 bg-orange-500/20';
+                  default: 
+                    return 'text-primary bg-primary/20';
+                }
+              };
+              
+              return (
+                <div key={index} className="flex items-center gap-4 p-4 rounded-xl hover:bg-background/50 transition-colors">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getIconColor()}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {activity.title || activity.description || activity.message || 'Activity update'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {activity.description && activity.title ? activity.description : 
+                       activity.subtitle || 'Hotel activity'}
+                    </p>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {activity.time || 'Recent'}
+                  </span>
+                </div>
+              );
+            })
+          ) : (
+            // Empty state
+            <div className="text-center py-8">
+              <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h4 className="text-sm font-medium text-foreground mb-2">No recent activity</h4>
+              <p className="text-xs text-muted-foreground">Activity will appear here as it happens</p>
+            </div>
+          )}
+        </div>
       </div>
 
     </div>

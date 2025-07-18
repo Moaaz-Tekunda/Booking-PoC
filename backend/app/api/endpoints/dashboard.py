@@ -134,14 +134,15 @@ def _time_ago(created_at: datetime) -> str:
     """Helper function to calculate time ago"""
     now = datetime.utcnow()
     diff = now - created_at
+    total_seconds = int(diff.total_seconds())
     
     if diff.days > 0:
         return f"{diff.days}d ago"
-    elif diff.seconds > 3600:
-        hours = diff.seconds // 3600
+    elif total_seconds > 3600:
+        hours = total_seconds // 3600
         return f"{hours}h ago"
-    elif diff.seconds > 60:
-        minutes = diff.seconds // 60
+    elif total_seconds > 60:
+        minutes = total_seconds // 60
         return f"{minutes}m ago"
     else:   
         return "Just now"
@@ -188,7 +189,8 @@ def generate_hotel_admin_recent_activity(reservations, hotels):
             "title": "New reservation",
             "description": f"${reservation.total_price} booking at {hotel_name}",
             "time": time_ago,
-            "icon": "calendar"
+            "icon": "calendar",
+            "created_at": reservation.created_at  # Add for proper sorting
         })
     
     # Add recent hotel additions (last 2)
@@ -200,10 +202,16 @@ def generate_hotel_admin_recent_activity(reservations, hotels):
             "title": "Hotel added",
             "description": f"{hotel.name} in {hotel.city}",
             "time": time_ago,
-            "icon": "building"
+            "icon": "building",
+            "created_at": hotel.created_at  # Add for proper sorting
         })
     
-    # Sort by time and limit to 6 most recent activities
-    recent_activity.sort(key=lambda x: x["time"], reverse=False)
+    # Sort by actual datetime (most recent first) and limit to 6 most recent activities
+    recent_activity.sort(key=lambda x: x["created_at"], reverse=True)
+    
+    # Remove the created_at field before returning (it was just for sorting)
+    for activity in recent_activity:
+        del activity["created_at"]
+    
     return recent_activity[:6]
     

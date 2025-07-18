@@ -6,6 +6,7 @@ import AdminHotelLayout from '@/components/hotel-admin/hotel-admin-layout';
 import HotelAdminDashboard from '@/components/hotel-admin/hotel-admin-dashboard';
 import { MyHotels } from '@/components/hotel-admin/my-hotels';
 import HotelsGrid from '@/components/admin/hotels-grid';
+import HotelReservations from '@/components/hotel-admin/hotel-reservations';
 
 export default function DashboardPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -55,10 +56,7 @@ export default function DashboardPage() {
         )}
 
         {activeSection === 'reservations' && (
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-6">Reservations</h1>
-            <p className="text-muted-foreground">Manage all reservations</p>
-          </div>
+          <HotelReservations />
         )}
       </div>
     </AdminHotelLayout>

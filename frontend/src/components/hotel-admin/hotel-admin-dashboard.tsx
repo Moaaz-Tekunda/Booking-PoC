@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 export default function HotelAdminDashboard() {
   const { stats, isLoading, error, refetch } = useHotelAdminStats();
+  console.log('Hotel Admin Stats:', stats);
   
   const statCards = [
     {

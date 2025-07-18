@@ -27,16 +27,12 @@ async def login(login_data: LoginRequest, request: Request):
     - Store refresh token securely for getting new access tokens
     - Include access token in Authorization header: `Bearer <access_token>`
     """
-    # Get client info for tracking (optional)
-    user_agent = request.headers.get("user-agent", "Unknown")
-    client_ip = request.client.host if request.client else "Unknown"
-    device_info = f"{user_agent} - {client_ip}"
+
 
     # Authenticate and generate tokens
     token_response = await AuthService.login(
         email=login_data.email,
-        password=login_data.password,
-        device_info=device_info
+        password=login_data.password
     )
     
     if not token_response:

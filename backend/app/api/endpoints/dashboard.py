@@ -46,20 +46,26 @@ async def get_dashboard_stats(
         else:
             users = await UserService.get_users(skip=0, limit=10000)
         
-        # Get hotels (all for super admin, specific hotel for hotel admin)
-        if current_user.role == "admin_hotel" and current_user.hotel_id:
-            # Hotel admin sees only their hotel
-            hotel = await HotelService.get_hotel(current_user.hotel_id)
-            hotels = [hotel] if hotel else []
+        # Get hotels (all for super admin, created hotels for hotel admin)
+        if current_user.role == "admin_hotel":
+            # Hotel admin sees only hotels they created
+            hotels = await HotelService.get_hotels_by_creator(str(current_user.id))
         else:
             # Super admin sees all hotels
             hotels = await HotelService.get_hotels(skip=0, limit=10000, active_only=False)
         
         # Get all reservations
-        if current_user.role == "admin_hotel" and current_user.hotel_id:
-            reservations = await ReservationService.get_reservations_by_hotel(
-                current_user.hotel_id, skip=0, limit=10000
-            )
+        if current_user.role == "admin_hotel":
+            # Get all hotels created by this hotel admin
+            admin_hotels = await HotelService.get_hotels_by_creator(str(current_user.id))
+            reservations = []
+            
+            # Get reservations for all hotels created by this admin
+            for hotel in admin_hotels:
+                hotel_reservations = await ReservationService.get_reservations_by_hotel(
+                    str(hotel.id), skip=0, limit=10000
+                )
+                reservations.extend(hotel_reservations)
         else:
             reservations = await ReservationService.get_reservations(skip=0, limit=10000)
         
@@ -163,10 +169,17 @@ async def get_hotel_admin_dashboard_stats(
         raise HTTPException(status_code=403, detail="Access denied")
     
     try:               
-        reservations = await ReservationService.get_reservations_by_hotel(
-            current_user.hotel_id, skip=0, limit=10000
-        )
+        # Get all hotels created by this hotel admin
         hotels = await HotelService.get_hotels_by_creator(str(current_user.id))
+        
+        # Get reservations for all hotels created by this admin
+        reservations = []
+        for hotel in hotels:
+            hotel_reservations = await ReservationService.get_reservations_by_hotel(
+                str(hotel.id), skip=0, limit=10000
+            )
+            reservations.extend(hotel_reservations)
+            
         total_hotels = len(hotels)
         total_reservations = len(reservations)
 

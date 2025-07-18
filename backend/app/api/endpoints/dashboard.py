@@ -85,7 +85,8 @@ async def get_dashboard_stats(
                 "title": "New user registration",
                 "description": f"{user.name} ({user.email}) joined",
                 "time": time_ago,
-                "icon": "users"
+                "icon": "users",
+                "created_at": user.created_at  # Add for proper sorting
             })
         
         # Add recent hotel additions
@@ -97,7 +98,8 @@ async def get_dashboard_stats(
                 "title": "New hotel added",
                 "description": f"{hotel.name} in {hotel.city}",
                 "time": time_ago,
-                "icon": "building"
+                "icon": "building",
+                "created_at": hotel.created_at  # Add for proper sorting
             })
         
         # Add recent bookings
@@ -109,11 +111,17 @@ async def get_dashboard_stats(
                 "title": "New booking",
                 "description": f"Reservation for ${reservation.total_price}",
                 "time": time_ago,
-                "icon": "calendar"
+                "icon": "calendar",
+                "created_at": reservation.created_at  # Add for proper sorting
             })
         
-        # Sort recent activity by creation time and limit to 5 items
-        recent_activity.sort(key=lambda x: x["time"], reverse=False)
+        # Sort recent activity by actual datetime (most recent first) and limit to 5 items
+        recent_activity.sort(key=lambda x: x["created_at"], reverse=True)
+        
+        # Remove the created_at field before returning (it was just for sorting)
+        for activity in recent_activity:
+            del activity["created_at"]
+            
         recent_activity = recent_activity[:5]
         
         return DashboardStats(

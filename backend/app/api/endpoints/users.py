@@ -68,10 +68,19 @@ async def create_user(user_data: UserCreate):
     
     **Access Level:** Public
     **Business Logic:** 
-    - Anyone can register as a viewer
-    - Only super admins can create admin users (handled in service layer)
+    - Anyone can register as a viewer or admin_hotel
+    - Only super admins can create super_admin users
     """
-    return await UserService.create_user(user_data)
+    try:
+        # Prevent creation of super_admin through public registration
+        if user_data.role == "super_admin":
+            raise HTTPException(status_code=403, detail="Super admin accounts can only be created by existing super admins")
+        
+        return await UserService.create_user(user_data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating user: {str(e)}")
 
 
 @router.put("/{user_id}", response_model=UserResponse)

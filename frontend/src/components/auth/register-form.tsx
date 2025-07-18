@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { Eye, EyeOff, Mail, Lock, User, Phone, Calendar, Briefcase, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, Calendar, ArrowRight } from 'lucide-react';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -19,7 +19,6 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
     age: '',
     mobile_number: '',
     gender: 'male' as 'male' | 'female',
-    job_type: '',
     role: 'viewer' as 'viewer' | 'admin_hotel',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -50,7 +49,6 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
       age: parseInt(formData.age),
       mobile_number: formData.mobile_number,
       gender: formData.gender,
-      job_type: formData.job_type || undefined,
       role: formData.role,
     });
     
@@ -248,45 +246,22 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
           </div>
         </div>
 
-        {/* Gender and Job Type Row */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label htmlFor="gender" className="block text-sm font-medium text-foreground">
-              Gender
-            </label>
-            <select
-              id="gender"
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-foreground"
-              disabled={isSubmitting}
-            >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="job_type" className="block text-sm font-medium text-foreground">
-              Job Type
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Briefcase className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <input
-                id="job_type"
-                name="job_type"
-                type="text"
-                value={formData.job_type}
-                onChange={handleChange}
-                className="w-full pl-12 pr-4 py-3 bg-background/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-foreground placeholder:text-muted-foreground"
-                placeholder="Your profession"
-                disabled={isSubmitting}
-              />
-            </div>
-          </div>
+        {/* Gender Field */}
+        <div className="space-y-2">
+          <label htmlFor="gender" className="block text-sm font-medium text-foreground">
+            Gender
+          </label>
+          <select
+            id="gender"
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-foreground"
+            disabled={isSubmitting}
+          >
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
         </div>
 
         {/* Role Selection */}

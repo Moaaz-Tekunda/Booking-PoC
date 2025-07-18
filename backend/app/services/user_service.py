@@ -10,17 +10,26 @@ class UserService:
     @staticmethod
     async def create_user(user_data: UserCreate) -> UserResponse:
         """Create a new user with properly hashed password"""
-        # Hash the password securely
-        hashed_password = get_password_hash(user_data.password)
-        
-        user_dict = user_data.model_dump(exclude={"password"})
-        user = User(**user_dict, hashed_password=hashed_password)
-        await user.create()
-        
-        return UserResponse.model_validate({
-            **user.model_dump(),
-            "id": str(user.id)
-        })
+        try:
+            # Check if email already exists
+            existing_user = await User.find_one({"email": user_data.email})
+            if existing_user:
+                raise ValueError("Email already registered")
+            
+            # Hash the password securely
+            hashed_password = get_password_hash(user_data.password)
+            
+            user_dict = user_data.model_dump(exclude={"password"})
+            user = User(**user_dict, hashed_password=hashed_password)
+            await user.create()
+            
+            return UserResponse.model_validate({
+                **user.model_dump(),
+                "id": str(user.id)
+            })
+        except Exception as e:
+            print(f"Error creating user: {e}")
+            raise e
 
     @staticmethod
     async def get_user(user_id: str) -> Optional[UserResponse]:
